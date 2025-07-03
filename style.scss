@@ -8,21 +8,86 @@ window.Bar {
   > centerbox {
     background: $bg;
     border-radius: 0px;
-    margin: 0px;
     padding: 2px;
-  }
+    border-bottom: 2px solid rgba(0,0,0,0.3);
 
-  button {
+    button {
+      border-radius: 5px;
+      margin: 2px;
+      padding: 1px 6px;
+    }
+
+    menubutton > button.toggle:checked {
+      background: rgba(235, 235, 235, 0.2);
+      color: rgba(235, 235, 235, 1);
+    }
+  }
+}
+
+window.Bar > centerbox > .frame {
+  /* ── 内側パネル (既存スタイル) ────────────── */
+  > button,
+  > menubutton {
+    background: $bg;
     border-radius: 5px;
-    margin: 2px;
+    margin: 0 4px;
     padding: 1px 6px;
   }
 
+  /* menubutton ON 状態 */
   menubutton > button.toggle:checked {
-    background: rgba(235, 235, 235, 0.2);
+    background: rgba(235, 235, 235, 0.20);
     color: rgba(235, 235, 235, 1);
   }
 }
+
+/*───────────────────────────────────────────────
+  System Menu – left-slide panel
+───────────────────────────────────────────────*/
+window.SysMenu {
+  /* ウィンドウ自体は透明のまま。クリック透過も維持 */
+  background: transparent;
+
+  /* Revealer が展開したときのコンテナ */
+  > revealer {
+    min-height: 100%;        /* 画面いっぱいの高さ */
+
+    /* ──パネル本体────────────────────────── */
+    > box {
+      min-width: 240px;        /* ★パネル幅 */
+      background: transparent;
+      border: 1px solid rgba(0,0,0,0.5);
+      border-radius: 5px;
+
+      > box {
+        min-width: 240px;        /* ★パネル幅 */
+        background: $bg;
+        padding: 16px;
+        border: 1px solid rgba(235,235,235,0.1);
+        border-radius: 5px;
+
+        /* タイトル行 */
+        > label.title {
+          font-weight: bold;
+          color: rgba(235, 235, 235, 1);
+          margin-bottom: 8px;
+        }
+
+        /* ボタンは Bar と同じ共通ルールを継承 */
+        > button {
+          border-radius: 5px;
+          margin: 2px;
+          padding: 1px 6px;
+
+          /* 個別ホバー/アクティブ色だけ薄めに */
+          &:hover   { background: rgba(235,235,235,.08); }
+          &:active  { background: rgba(235,235,235,.16); }
+        }
+      }
+    }
+  }
+}
+
 
 *:focus {
   outline: none;
