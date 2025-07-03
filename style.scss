@@ -1,0 +1,76 @@
+$bg: rgba(71, 83, 88, 0.24);
+
+window.Bar {
+  background: transparent;
+  color: $bg;
+  font-weight: bold;
+
+  > centerbox {
+    background: $bg;
+    border-radius: 0px;
+    margin: 0px;
+    padding: 2px;
+  }
+
+  button {
+    border-radius: 5px;
+    margin: 2px;
+    padding: 1px 6px;
+  }
+
+  menubutton > button.toggle:checked {
+    background: rgba(235, 235, 235, 0.2);
+    color: rgba(235, 235, 235, 1);
+  }
+}
+
+*:focus {
+  outline: none;
+  outline-width: 0;
+}
+
+popover.background,
+popover.background.menu {
+  border-radius: 8px;
+
+  > arrow {
+    background-color: $bg;
+  }
+
+  > contents {
+    background-color: $bg;
+    background-image: none;
+    padding: 8px;
+  }
+}
+
+/* ルートノードは ‘calendar.view’ */
+calendar.view {
+  background: rgba(71, 83, 88, 0.24);
+  border-radius: 8px;
+  padding: 6px;
+}
+/* 曜日ヘッダ・週番号ラベル */
+calendar.view header,
+calendar.view label.day-name {
+  color: rgba(235, 235, 235, 1);
+}
+/* 通常の日付 */
+calendar.view label.day-number {
+  color: #cdd6f4;
+}
+/* 今日 */
+calendar.view label.today {
+  background: #89b4fa;
+  color: #1e1e2e;
+  border-radius: 4px;
+}
+/* 選択中 */
+calendar.view label:selected {
+  background: rgba(235, 235, 235, 1);
+  color: #1e1e2e;
+}
+/* 前後月の薄色 */
+calendar.view label.other-month {
+  color: #7f849c;
+}
