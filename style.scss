@@ -4,12 +4,13 @@ window.Bar {
   background: transparent;
   color: $bg;
   font-weight: bold;
+  border-bottom: 1px solid rgba(0,0,0,0.4);
 
   > centerbox {
     background: $bg;
     border-radius: 0px;
     padding: 2px;
-    border-bottom: 2px solid rgba(0,0,0,0.3);
+    border-bottom: 1px solid rgba(0,0,0,0.1);
 
     button {
       border-radius: 5px;
@@ -50,8 +51,6 @@ window.SysMenu {
 
   /* Revealer が展開したときのコンテナ */
   > revealer {
-    min-height: 100%;        /* 画面いっぱいの高さ */
-
     /* ──パネル本体────────────────────────── */
     > box {
       min-width: 240px;        /* ★パネル幅 */

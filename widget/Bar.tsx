@@ -3,7 +3,7 @@ import { Astal, Gtk, Gdk } from "ags/gtk4"
 import { execAsync } from "ags/process"
 import { createPoll } from "ags/time"
 import Calendar from "./CustomCalendar"
-import { showSysMenu, setShowSysMenu, SystemMenuWindow } from "./SystemMenu"
+import { showSysMenu, setShowSysMenu, SystemMenuWindow, setClickLayerVisible, clickLayerVisible } from "./SystemMenu"
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   const time = createPoll("", 1000, "date '+%m/%d %H:%M'")
@@ -33,7 +33,10 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       <centerbox cssName="centerbox">
         <button
           $type="start"
-          onClicked={() => setShowSysMenu(!showSysMenu.get())}
+          onClicked={() => {
+            setClickLayerVisible(!clickLayerVisible.get())
+            setShowSysMenu(!showSysMenu.get())
+          }}
           hexpand
           halign={Gtk.Align.START}
           css={`margin: 2px 8px;`}
