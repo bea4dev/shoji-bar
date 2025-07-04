@@ -8,7 +8,7 @@ const [playingIcon, setPlayingIcon] = createState("");
 const [title, setTitle] = createState("—");
 const [artist, setArtist] = createState("—");
 
-/* 2 秒ごとに playerctl で最新状態を取得 */
+/* 1 秒ごとに playerctl で最新状態を取得 */
 setInterval(async () => {
   try {
     /* metadata: {{artist}}\t{{title}} */
@@ -35,7 +35,7 @@ setInterval(async () => {
     setIsPlaying(false);
     setPlayingIcon("");
   }
-}, 2000);
+}, 1000);
 
 export function MediaControl() {
   return (

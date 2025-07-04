@@ -42,6 +42,23 @@ window.Bar > centerbox > .frame {
   }
 }
 
+button.ws-btn {
+  min-width: 10px;
+  padding: 2px 4px;
+  color: #cdd6f4;
+  background: transparent;
+  border-radius: 4px;
+  transition: background 120ms;
+
+  &:hover  { background: rgba(235,235,235,.08); }
+  &:active { background: rgba(235,235,235,.16); }
+}
+
+button.ws-btn.active {
+  color: rgba(119, 224, 173, 1);
+  border: 1px solid rgba(235, 235, 235, 0.5);
+}
+
 /*───────────────────────────────────────────────
   System Menu – left-slide panel
 ───────────────────────────────────────────────*/

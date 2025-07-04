@@ -16,6 +16,7 @@ import {
   setShowCalendar,
   showCalendar
 } from "./CustomCalendar"
+import WorkspaceBar from "./WorkspaceBar"
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   const time = createPoll("", 1000, "date '+%m/%d %H:%M'")
@@ -35,24 +36,29 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       application={app}
     >
       <centerbox cssName="centerbox">
-        <button
+        <box
           $type="start"
-          onClicked={() => {
-            if (!sysMenuClickLayerVisible.get()) {
-              setSysMenuClickLayerVisible(true);
-            }
-            setShowSysMenu(!showSysMenu.get());
-          }}
-          hexpand
+          orientation={Gtk.Orientation.HORIZONTAL}
+          spacing={8}
           halign={Gtk.Align.START}
-          css={`margin: 2px 8px;`}
         >
-          <label label="   " xalign={0.0} css={`
+          <button
+            onClicked={() => {
+              if (!sysMenuClickLayerVisible.get()) {
+                setSysMenuClickLayerVisible(true);
+              }
+              setShowSysMenu(!showSysMenu.get());
+            }}
+            hexpand
+            css={`margin: 2px 8px;`}
+          >
+            <label label="   " xalign={0.0} css={`
             font-family: monospace;
             margin-left: 3px;
           `} />
-        </button>
-        <box $type="center" />
+          </button>
+          <WorkspaceBar />
+        </box>
         <button $type="center" hexpand halign={Gtk.Align.CENTER}
           onClicked={() => {
             if (!calendarClickLayerVisible.get()) {
