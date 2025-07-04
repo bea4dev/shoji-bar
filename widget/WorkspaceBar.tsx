@@ -10,8 +10,7 @@ const [currentWorkspace, setCurrentWorkspace] = createState(0);
 export const maxOf = (arr: number[]): number | undefined =>
   arr.length ? Math.max(...arr) : undefined;
 
-// on workspace update?
-hyprlandService.connect('notify::focused-workspace', () => {
+function update() {
   const currentWorkspace = hyprlandService.focused_workspace.id
 
   const activeWorkspaceIds = hyprlandService.workspaces
@@ -28,7 +27,13 @@ hyprlandService.connect('notify::focused-workspace', () => {
 
   setWorkspaceArray(newWorkspaceIds);
   setCurrentWorkspace(currentWorkspace);
-});
+}
+
+// init
+update();
+
+// on workspace update?
+hyprlandService.connect('notify::focused-workspace', update);
 
 function WorkspaceButton({ workspace }: { workspace: number }) {
   return (
