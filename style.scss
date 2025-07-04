@@ -1,4 +1,4 @@
-$bg: rgba(71, 83, 88, 0.24);
+$bg: rgba(71, 83, 88, 0.21);
 
 window.Bar {
   background: transparent;
@@ -53,17 +53,22 @@ window.SysMenu {
   > revealer {
     /* ──パネル本体────────────────────────── */
     > box {
-      min-width: 240px;        /* ★パネル幅 */
       background: transparent;
       border: 1px solid rgba(0,0,0,0.5);
       border-radius: 5px;
 
       > box {
-        min-width: 240px;        /* ★パネル幅 */
-        background: $bg;
-        padding: 16px;
+        background: transparent;
+        padding: 8px;
         border: 1px solid rgba(235,235,235,0.1);
-        border-radius: 5px;
+        border-radius: 4px;
+
+        > box {
+          background: $bg;
+          padding: 16px;
+          border: 1px solid rgba(235,235,235,0.1);
+          border-radius: 6px;
+        }
 
         /* タイトル行 */
         > label.title {
@@ -72,21 +77,106 @@ window.SysMenu {
           margin-bottom: 8px;
         }
 
-        /* ボタンは Bar と同じ共通ルールを継承 */
-        > button {
+        /* ボタンは Bar と同じ */
+        button {
           border-radius: 5px;
           margin: 2px;
           padding: 1px 6px;
-
-          /* 個別ホバー/アクティブ色だけ薄めに */
-          &:hover   { background: rgba(235,235,235,.08); }
-          &:active  { background: rgba(235,235,235,.16); }
+          min-width: 35px;
+          min-height: 35px;
         }
       }
     }
   }
 }
 
+window.CalandarMenu {
+  /* ウィンドウ自体は透明のまま。クリック透過も維持 */
+  background: transparent;
+
+  /* Revealer が展開したときのコンテナ */
+  > revealer {
+    /* ──パネル本体────────────────────────── */
+    > box {
+      min-width: 240px;
+      background: transparent;
+      border: 1px solid rgba(0,0,0,0.5);
+      border-radius: 5px;
+
+      > box {
+        min-width: 240px;
+        background: transparent;
+        padding: 8px;
+        border: 1px solid rgba(235,235,235,0.1);
+        border-radius: 5px;
+
+        > box {
+          > label {
+            font-family: monospace;
+            border: 1px solid rgba(71, 83, 88, 1); /* 枠線の色と太さ */
+            background: rgba(71, 83, 88, 0.24);
+            border-radius: 6px;             /* 角丸 */
+            padding: 8px 8px;               /* 枠と文字の余白 */
+            font-size: 16pt;                /* 文字サイズ */
+            font-weight: bold;              /* 太字 */
+            color: rgba(235, 235, 235, 1);  /* 文字色（任意） */
+          }
+        }
+
+        /* タイトル行 */
+        label.title {
+          font-weight: bold;
+          color: rgba(235, 235, 235, 1);
+          margin-bottom: 8px;
+        }
+
+        /* ボタンは Bar と同じ */
+        button {
+          border-radius: 5px;
+          margin: 2px;
+          padding: 1px 6px;
+        }
+      }
+    }
+  }
+}
+
+slider {
+  min-width: 180px;
+  margin-top: 0px;
+
+  trough {
+    background: rgba(235,235,235,.08);
+    border-radius: 4px;
+  }
+  highlight {
+    background: rgba(219, 234, 236, 0.5);
+  }
+  slider {
+    background: #cdd6f4;
+    border-radius: 5px;
+    min-width: 15px;
+    min-height: 15px;
+  }
+}
+
+levelbar {
+  min-width: 180px;
+  min-height: 0px;
+  border-radius: 4px;
+
+  trough {
+    block.filled {
+      background: rgba(219, 234, 236, 0.5);
+      border-radius: 4px;
+    }
+
+    block.empty {
+      background: rgba(219, 234, 236, 0.1);
+      border-radius: 4px;
+    }
+  }
+}
 
 *:focus {
   outline: none;

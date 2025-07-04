@@ -1,11 +1,21 @@
 import { Accessor, createState } from "ags";
 import { Astal, Gdk, Gtk } from "ags/gtk4";
+import GLib from "gi://GLib";
+import { VolumeSlider, volumeString } from "./SystemMenuWidget/Volume";
+import { BrightnessSlider, brightnessString } from "./SystemMenuWidget/Brightness";
+import { CPUBar, cpuUsageString } from "./SystemMenuWidget/CPUMonitor";
+import { MemoryBar, memoryUsageString } from "./SystemMenuWidget/MemoryMonitor";
+import { MediaControl } from "./SystemMenuWidget/MediaControl";
 
 export const [showSysMenu, setShowSysMenu] = createState(false);
-export const [clickLayerVisible, setClickLayerVisible] = createState(false);
+export const [sysMenuClickLayerVisible, setSysMenuClickLayerVisible] = createState(false);
 
 export function SystemMenuWindow(gdkmonitor: Gdk.Monitor) {
-  const revealer = (
+  const userName = GLib.getenv('USER')
+    ?? GLib.get_user_name()
+    ?? 'unknown';
+
+  const sysMenuRevealer = (
     <revealer
       transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
       transitionDuration={250}
@@ -15,17 +25,65 @@ export function SystemMenuWindow(gdkmonitor: Gdk.Monitor) {
       vexpand={false}
     >
       <box>
-        <box
-          orientation={Gtk.Orientation.VERTICAL}
-          spacing={12}
-        >
-          <label label="System Menu" css="font-weight:bold;" />
-          <button onClicked={() => console.log("poweroff")}>
-            <label label="⏻  Power Off" />
-          </button>
-          <button onClicked={() => console.log("setting")}>
-            <label label="⚙  Settings" />
-          </button>
+        <box orientation={Gtk.Orientation.VERTICAL} spacing={12}>
+          <box orientation={Gtk.Orientation.HORIZONTAL} spacing={12}>
+            <box orientation={Gtk.Orientation.VERTICAL} spacing={6}>
+              <label label={userName} css="font-size:18px;" />
+              <image
+                file={"/home/" + userName + "/Pictures/icon.png"}
+                css="min-width:128px; min-height:128px;"
+              />
+            </box>
+            <box orientation={Gtk.Orientation.VERTICAL} spacing={8} valign={Gtk.Align.END}>
+              <box orientation={Gtk.Orientation.HORIZONTAL} spacing={8} valign={Gtk.Align.END}>
+                <button valign={Gtk.Align.END}>
+                  <label label="" xalign={0.48} />
+                </button>
+                <button valign={Gtk.Align.END}>
+                  <label label="" xalign={0.48} />
+                </button>
+              </box>
+              <box orientation={Gtk.Orientation.HORIZONTAL} spacing={8} valign={Gtk.Align.END}>
+                <button valign={Gtk.Align.END}>
+                  <label label="" xalign={0.45} />
+                </button>
+                <button valign={Gtk.Align.END}>
+                  <label label="" xalign={0.48} />
+                </button>
+              </box>
+            </box>
+          </box>
+          <box orientation={Gtk.Orientation.VERTICAL} spacing={16}>
+            <box orientation={Gtk.Orientation.HORIZONTAL}>
+              <label label=" " css="margin-top:-2px;" />
+              <label label={volumeString} css="font-family:monospace;" />
+              <label label="  " />
+              <VolumeSlider />
+            </box>
+            <box orientation={Gtk.Orientation.HORIZONTAL}>
+              <label label=" " css="margin-top:-2px;" />
+              <label label={brightnessString} css="font-family:monospace;" />
+              <label label="  " />
+              <BrightnessSlider />
+            </box>
+          </box>
+          <box orientation={Gtk.Orientation.VERTICAL} spacing={16}>
+            <box orientation={Gtk.Orientation.HORIZONTAL}>
+              <label label=" " css="margin-top:-2px;" />
+              <label label={cpuUsageString} css="font-family:monospace;" />
+              <label label="  " />
+              <CPUBar />
+            </box>
+            <box orientation={Gtk.Orientation.HORIZONTAL}>
+              <label label=" " css="margin-top:-2px;" />
+              <label label={memoryUsageString} css="font-family:monospace;" />
+              <label label="  " />
+              <MemoryBar />
+            </box>
+          </box>
+          <box orientation={Gtk.Orientation.VERTICAL} spacing={16}>
+            <MediaControl />
+          </box>
         </box>
       </box>
     </revealer>
@@ -42,18 +100,15 @@ export function SystemMenuWindow(gdkmonitor: Gdk.Monitor) {
         | Astal.WindowAnchor.TOP
         | Astal.WindowAnchor.BOTTOM}
       exclusivity={Astal.Exclusivity.NORMAL}
-      visible={clickLayerVisible}
-      children={[revealer]}
+      visible={sysMenuClickLayerVisible}
+      child={sysMenuRevealer}
     >
     </window>
   ) as Gtk.Window;
 
-  revealer.connect('notify::child-revealed', () => {
-    if (revealer.child_revealed) {
-      console.log("open!")
-    } else {
-      console.log("close!");
-      setClickLayerVisible(false);
+  sysMenuRevealer.connect('notify::child-revealed', () => {
+    if (!sysMenuRevealer.child_revealed) {
+      setSysMenuClickLayerVisible(false);
     }
   });
 
@@ -62,9 +117,9 @@ export function SystemMenuWindow(gdkmonitor: Gdk.Monitor) {
 
 
   outsideClick.connect('pressed', (_g, _n, x, y) => {
-    console.log("click!");
-    if (!revealer.contains(x, y))
+    if (!sysMenuRevealer.contains(x, y)) {
       setShowSysMenu(false);
+    }
   });
   windowLayer.add_controller(outsideClick);
 }

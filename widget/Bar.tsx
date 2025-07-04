@@ -2,23 +2,27 @@ import app from "ags/gtk4/app"
 import { Astal, Gtk, Gdk } from "ags/gtk4"
 import { execAsync } from "ags/process"
 import { createPoll } from "ags/time"
-import Calendar from "./CustomCalendar"
-import { showSysMenu, setShowSysMenu, SystemMenuWindow, setClickLayerVisible, clickLayerVisible } from "./SystemMenu"
+import {
+  showSysMenu,
+  setShowSysMenu,
+  SystemMenuWindow,
+  setSysMenuClickLayerVisible,
+  sysMenuClickLayerVisible,
+} from "./SystemMenu"
+import {
+  calendarClickLayerVisible,
+  CalendarWindow,
+  setCalendarMenuClickLayerVisible,
+  setShowCalendar,
+  showCalendar
+} from "./CustomCalendar"
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   const time = createPoll("", 1000, "date '+%m/%d %H:%M'")
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor
 
-  const popover = new Gtk.Popover();
-  const revealer = new Gtk.Revealer({
-    transition_type: Gtk.RevealerTransitionType.SLIDE_DOWN,
-    transition_duration: 250,
-    reveal_child: false,
-  });
-  revealer.set_child(Calendar() as Gtk.Widget);
-  popover.set_child(revealer);
-
   SystemMenuWindow(gdkmonitor);
+  CalendarWindow(gdkmonitor);
 
   return (
     <window
@@ -34,8 +38,10 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         <button
           $type="start"
           onClicked={() => {
-            setClickLayerVisible(!clickLayerVisible.get())
-            setShowSysMenu(!showSysMenu.get())
+            if (!sysMenuClickLayerVisible.get()) {
+              setSysMenuClickLayerVisible(true);
+            }
+            setShowSysMenu(!showSysMenu.get());
           }}
           hexpand
           halign={Gtk.Align.START}
@@ -47,17 +53,20 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           `} />
         </button>
         <box $type="center" />
-        <menubutton $type="center" popover={popover} hexpand halign={Gtk.Align.CENTER}
-          onNotifyActive={(button, _) => {
-            revealer.reveal_child = button.active;
+        <button $type="center" hexpand halign={Gtk.Align.CENTER}
+          onClicked={() => {
+            if (!calendarClickLayerVisible.get()) {
+              setCalendarMenuClickLayerVisible(true);
+            }
+            setShowCalendar(!showCalendar.get());
           }}>
           <label label={time} />
-        </menubutton>
+        </button>
         <button
           $type="end"
           onClicked={() => execAsync("echo hello").then(console.log)}
           hexpand
-          halign={Gtk.Align.START}
+          halign={Gtk.Align.END}
         >
           <label label="Welcome to AGS!" />
         </button>
