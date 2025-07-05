@@ -1,6 +1,5 @@
 import app from "ags/gtk4/app"
 import { Astal, Gtk, Gdk } from "ags/gtk4"
-import { execAsync } from "ags/process"
 import { createPoll } from "ags/time"
 import {
   showSysMenu,
@@ -17,6 +16,14 @@ import {
   showCalendar
 } from "./CustomCalendar"
 import WorkspaceBar from "./WorkspaceBar"
+import SystemTray from "./SystemTray"
+import NotificationCenterWindow, {
+  notificationClickLayerVisible,
+  setNotificationClickLayerVisible,
+  setShowNotificationCenter,
+  showNotificationCenter
+} from "./Notifications"
+import NotificationPopups, { notifications } from "./NotificationPopup"
 
 export default function Bar(gdkmonitor: Gdk.Monitor) {
   const time = createPoll("", 1000, "date '+%m/%d %H:%M'")
@@ -24,6 +31,8 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
 
   SystemMenuWindow(gdkmonitor);
   CalendarWindow(gdkmonitor);
+  NotificationCenterWindow(gdkmonitor);
+  NotificationPopups(gdkmonitor);
 
   return (
     <window
@@ -68,14 +77,31 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           }}>
           <label label={time} />
         </button>
-        <button
+        <box
           $type="end"
-          onClicked={() => execAsync("echo hello").then(console.log)}
-          hexpand
           halign={Gtk.Align.END}
+          orientation={Gtk.Orientation.HORIZONTAL}
+          spacing={8}
         >
-          <label label="Welcome to AGS!" />
-        </button>
+          <SystemTray />
+          <button
+            onClicked={() => {
+              if (!notificationClickLayerVisible.get()) {
+                setNotificationClickLayerVisible(true);
+              }
+              setShowNotificationCenter(!showNotificationCenter.get());
+            }}
+            hexpand
+            css={`margin: 2px 8px;`}
+          >
+            <label
+              label={notifications(notifications => 
+                notifications.length > 0 ? `   ${notifications.length} ` : `   ${notifications.length} `
+              )}
+              css={`font-family: monospace;margin-left: 3px;`}
+            />
+          </button>
+        </box>
       </centerbox>
     </window>
   )

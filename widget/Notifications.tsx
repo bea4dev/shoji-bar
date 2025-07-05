@@ -1,0 +1,163 @@
+import { createBinding, createState, For } from "ags";
+import { Astal, Gdk } from "ags/gtk4";
+import AstalNotifd from "gi://AstalNotifd?version=0.1";
+import Gtk from "gi://Gtk?version=4.0";
+
+export const [showNotificationCenter, setShowNotificationCenter] = createState(false);
+export const [notificationClickLayerVisible, setNotificationClickLayerVisible] = createState(false);
+
+export default function NotificationCenterWindow(gdkmonitor: Gdk.Monitor) {
+  const notificationRevealer = (
+    <revealer
+      transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
+      transitionDuration={250}
+      revealChild={showNotificationCenter}
+      halign={Gtk.Align.END}
+      valign={Gtk.Align.START}
+      vexpand={false}
+    >
+      <box>
+        <box>
+          <box>
+            <NotificationCenter />
+          </box>
+        </box>
+      </box>
+    </revealer>
+  ) as Gtk.Revealer;
+
+  const windowLayer = (
+    <window
+      name="notificationcenter"
+      class="NotificationCenter"
+      gdkmonitor={gdkmonitor}
+      layer={Astal.Layer.OVERLAY}
+      anchor={Astal.WindowAnchor.LEFT
+        | Astal.WindowAnchor.RIGHT
+        | Astal.WindowAnchor.TOP
+        | Astal.WindowAnchor.BOTTOM}
+      exclusivity={Astal.Exclusivity.NORMAL}
+      visible={notificationClickLayerVisible}
+      child={notificationRevealer}
+    >
+    </window>
+  ) as Gtk.Window;
+
+  notificationRevealer.connect('notify::child-revealed', () => {
+    if (!notificationRevealer.child_revealed) {
+      setNotificationClickLayerVisible(false);
+    }
+  });
+
+  const outsideClick = Gtk.GestureClick.new();
+  outsideClick.set_propagation_phase(Gtk.PropagationPhase.CAPTURE);
+
+  outsideClick.connect('pressed', (_g, _n, xWin, yWin) => {
+    const alloc = notificationRevealer.get_allocation();
+    if (!(xWin >= alloc.x && xWin <= alloc.x + alloc.width &&
+      yWin >= alloc.y && yWin <= alloc.y + alloc.height)) {
+      setShowNotificationCenter(false);
+    }
+  });
+  windowLayer.add_controller(outsideClick);
+}
+
+export const [autoHideNotifications, setAutoHideNotifications] = createState(0);
+
+export function NotificationBox({ notification, autoHide, outLine }
+  : { notification: AstalNotifd.Notification, autoHide: boolean, outLine: boolean }) {
+
+  const [showNotification, setShowNotification] = createState(false);
+
+  var isDismiss = false;
+
+  if (autoHide) {
+    setAutoHideNotifications(autoHideNotifications.get() + 1);
+  }
+
+  const revealer = (
+    <revealer
+      transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
+      transitionDuration={250}
+      revealChild={showNotification}
+      halign={Gtk.Align.END}
+      valign={Gtk.Align.START}
+      vexpand={false}
+    >
+      <box class={outLine ? "notify-out" : "box"}>
+        <box class="notify" orientation={Gtk.Orientation.HORIZONTAL} spacing={12}>
+          {/* アイコン */}
+          {notification.appIcon
+            ? <image file={notification.appIcon} pixelSize={32} />
+            : <image iconName="dialog-information-symbolic" pixelSize={32} />}
+
+          {/* タイトル+本文 */}
+          <box orientation={Gtk.Orientation.VERTICAL} spacing={4}>
+            <label label={notification.summary} css="font-weight:bold;" wrap
+              maxWidthChars={25}
+              widthChars={25}
+              wrapMode={Gtk.WrapMode.CHAR} />
+            {<label
+              label={notification.body}
+              wrap
+              maxWidthChars={25}
+              widthChars={25}
+              wrapMode={Gtk.WrapMode.CHAR}
+            />}
+          </box>
+
+          {/* × ボタン */}
+          <button
+            class="close-btn"
+            halign={Gtk.Align.END}
+            onClicked={() => {
+              isDismiss = true;
+              setShowNotification(false);
+            }}
+          >
+            <label label="" />
+          </button>
+        </box>
+      </box>
+    </revealer>
+  ) as Gtk.Revealer;
+
+  setTimeout(() => setShowNotification(true), 100);
+
+  if (autoHide) {
+    setTimeout(() => setShowNotification(false), 5000);
+  }
+
+  revealer.connect("notify::child-revealed", () => {
+    if (!showNotification.get() && isDismiss) {
+      notification.dismiss();
+    }
+
+    if (!showNotification.get() && autoHide) {
+      setAutoHideNotifications(autoHideNotifications.get() - 1);
+    }
+  });
+
+  return revealer;
+}
+
+function NotificationCenter() {
+  const notify = AstalNotifd.get_default();
+  const notifications = createBinding(notify, "notifications")
+
+  return (
+    <scrolledwindow
+      overlayScrolling={false}
+      kineticScrolling={true}
+      css="min-width:350px;min-height:500px;"
+    >
+      <box orientation={Gtk.Orientation.VERTICAL} spacing={12}>
+        <For each={notifications}>
+          {(notification) => (
+            <NotificationBox notification={notification} autoHide={false} outLine={false} />
+          )}
+        </For>
+      </box>
+    </scrolledwindow>
+  );
+}

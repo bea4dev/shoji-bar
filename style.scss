@@ -59,6 +59,18 @@ button.ws-btn.active {
   border: 1px solid rgba(235, 235, 235, 0.5);
 }
 
+frame.noti-row {
+  background: rgba(71,83,88,.24);
+  border-radius: 8px;
+}
+
+button.close-btn {
+  padding:2px; min-width:20px; background:transparent;
+  &:hover { background: rgba(235,235,235,.1); }
+}
+
+scrolledwindow > box { padding: 8px; }
+
 /*───────────────────────────────────────────────
   System Menu – left-slide panel
 ───────────────────────────────────────────────*/
@@ -156,6 +168,84 @@ window.CalandarMenu {
       }
     }
   }
+}
+
+window.NotificationCenter {
+  /* ウィンドウ自体は透明のまま。クリック透過も維持 */
+  background: transparent;
+
+  /* Revealer が展開したときのコンテナ */
+  > revealer {
+    /* ──パネル本体────────────────────────── */
+    > box {
+      min-width: 240px;
+      background: transparent;
+      border: 1px solid rgba(0,0,0,0.5);
+      border-radius: 5px;
+
+      > box {
+        min-width: 240px;
+        background: transparent;
+        padding: 8px;
+        border: 1px solid rgba(235,235,235,0.1);
+        border-radius: 5px;
+
+        > box {
+          background: $bg;
+          padding: 16px;
+          border: 1px solid rgba(235,235,235,0.1);
+          border-radius: 6px;
+        }
+
+        /* ボタンは Bar と同じ */
+        button {
+          border-radius: 5px;
+          margin: 2px;
+          padding: 1px 6px;
+        }
+      }
+    }
+  }
+}
+
+
+scrollbar {
+  min-width: 1px;
+  min-height: 1px;
+  background: transparent;
+
+  > range {
+      background: rgba(235, 235, 235, 0.1);
+      border-radius: 4px;
+  }
+
+  /* ─ スライダー (handle) ─────────────── */
+  slider {
+    min-width: 8px;
+    min-height: 8px;
+    background: rgba(235, 235, 235, 0.16);
+    border-radius: 4px;
+    transition: background 120ms;
+
+    /* ホバー時はやや濃く */
+    &:hover  { background: rgba(235, 235, 235, 0.30); }
+    /* ドラッグ中は更に濃く */
+    &:active { background: rgba(235, 235, 235, 0.50); }
+  }
+}
+
+box.notify {
+  background: $bg;
+  padding: 16px;
+  border: 1px solid rgba(235,235,235,0.1);
+  border-radius: 6px;
+}
+
+box.notify-out {
+  min-width: 240px;
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.5);
+  border-radius: 5px;
 }
 
 slider {
