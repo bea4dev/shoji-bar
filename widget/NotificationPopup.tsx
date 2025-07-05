@@ -1,29 +1,41 @@
 import { Astal, Gdk, Gtk } from "ags/gtk4"
 import AstalNotifd from "gi://AstalNotifd"
-import { For, createState } from "ags"
+import { Accessor, For, Setter, createState } from "ags"
 import { autoHideNotifications, NotificationBox } from "./Notifications"
 
-const notifd = AstalNotifd.get_default()
+export class NotificationPopupStates {
+  public notifications: Accessor<Array<AstalNotifd.Notification>>
+  public setNotifications: Setter<Array<AstalNotifd.Notification>>
 
-export const [notifications, setNotifications] = createState(
-  new Array<AstalNotifd.Notification>(),
-);
+  public constructor() {
+    const [notifications, setNotifications] = createState(
+      new Array<AstalNotifd.Notification>(),
+    )
 
-notifd.connect("notified", (_, id, replaced) => {
-  const notification = notifd.get_notification(id)
-
-  if (replaced && notifications.get().some(n => n.id === id)) {
-    setNotifications((ns) => ns.map((n) => (n.id === id ? notification : n)))
-  } else {
-    setNotifications((ns) => [notification, ...ns])
+    this.notifications = notifications
+    this.setNotifications = setNotifications
   }
-});
+}
 
-notifd.connect("resolved", (_, id) => {
-  setNotifications((ns) => ns.filter((n) => n.id !== id))
-});
+export default function NotificationPopups(gdkmonitor: Gdk.Monitor, states: NotificationPopupStates) {
+  const notifd = AstalNotifd.get_default()
 
-export default function NotificationPopups(gdkmonitor: Gdk.Monitor) {
+  states.setNotifications(notifd.notifications)
+
+  notifd.connect("notified", (_, id, replaced) => {
+    const notification = notifd.get_notification(id)
+
+    if (replaced && states.notifications.get().some(n => n.id === id)) {
+      states.setNotifications((ns) => ns.map((n) => (n.id === id ? notification : n)))
+    } else {
+      states.setNotifications((ns) => [notification, ...ns])
+    }
+  });
+
+  notifd.connect("resolved", (_, id) => {
+    states.setNotifications((ns) => ns.filter((n) => n.id !== id))
+  });
+
   return (
     <window
       class="NotificationPopups"
@@ -32,7 +44,7 @@ export default function NotificationPopups(gdkmonitor: Gdk.Monitor) {
       anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT}
     >
       <box orientation={Gtk.Orientation.VERTICAL} spacing={12}>
-        <For each={notifications}>
+        <For each={states.notifications}>
           {(notification) => (
             <NotificationBox notification={notification} autoHide={true} outLine={true} />
           )}

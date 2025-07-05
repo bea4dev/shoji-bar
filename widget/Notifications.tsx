@@ -1,17 +1,32 @@
-import { createBinding, createState, For } from "ags";
+import { Accessor, createBinding, createState, For, Setter } from "ags";
 import { Astal, Gdk } from "ags/gtk4";
 import AstalNotifd from "gi://AstalNotifd?version=0.1";
 import Gtk from "gi://Gtk?version=4.0";
 
-export const [showNotificationCenter, setShowNotificationCenter] = createState(false);
-export const [notificationClickLayerVisible, setNotificationClickLayerVisible] = createState(false);
+export class NotificationCenterStates {
+  public showNotificationCenter: Accessor<boolean>
+  public setShowNotificationCenter: Setter<boolean>
 
-export default function NotificationCenterWindow(gdkmonitor: Gdk.Monitor) {
+  public notificationClickLayerVisible: Accessor<boolean>
+  public setNotificationClickLayerVisible: Setter<boolean>
+
+  public constructor() {
+    const [showNotificationCenter, setShowNotificationCenter] = createState(false)
+    const [notificationClickLayerVisible, setNotificationClickLayerVisible] = createState(false)
+
+    this.showNotificationCenter = showNotificationCenter
+    this.setShowNotificationCenter = setShowNotificationCenter
+    this.notificationClickLayerVisible = notificationClickLayerVisible
+    this.setNotificationClickLayerVisible = setNotificationClickLayerVisible
+  }
+}
+
+export default function NotificationCenterWindow(gdkmonitor: Gdk.Monitor, states: NotificationCenterStates) {
   const notificationRevealer = (
     <revealer
       transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
       transitionDuration={250}
-      revealChild={showNotificationCenter}
+      revealChild={states.showNotificationCenter}
       halign={Gtk.Align.END}
       valign={Gtk.Align.START}
       vexpand={false}
@@ -37,7 +52,7 @@ export default function NotificationCenterWindow(gdkmonitor: Gdk.Monitor) {
         | Astal.WindowAnchor.TOP
         | Astal.WindowAnchor.BOTTOM}
       exclusivity={Astal.Exclusivity.NORMAL}
-      visible={notificationClickLayerVisible}
+      visible={states.notificationClickLayerVisible}
       child={notificationRevealer}
     >
     </window>
@@ -45,7 +60,7 @@ export default function NotificationCenterWindow(gdkmonitor: Gdk.Monitor) {
 
   notificationRevealer.connect('notify::child-revealed', () => {
     if (!notificationRevealer.child_revealed) {
-      setNotificationClickLayerVisible(false);
+      states.setNotificationClickLayerVisible(false);
     }
   });
 
@@ -56,7 +71,7 @@ export default function NotificationCenterWindow(gdkmonitor: Gdk.Monitor) {
     const alloc = notificationRevealer.get_allocation();
     if (!(xWin >= alloc.x && xWin <= alloc.x + alloc.width &&
       yWin >= alloc.y && yWin <= alloc.y + alloc.height)) {
-      setShowNotificationCenter(false);
+      states.setShowNotificationCenter(false);
     }
   });
   windowLayer.add_controller(outsideClick);

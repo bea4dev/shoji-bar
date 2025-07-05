@@ -1,4 +1,4 @@
-import { Accessor, createState } from "ags";
+import { Accessor, createState, Setter } from "ags";
 import { Astal, Gdk, Gtk } from "ags/gtk4";
 import GLib from "gi://GLib";
 import { VolumeSlider, volumeString } from "./SystemMenuWidget/Volume";
@@ -7,10 +7,25 @@ import { CPUBar, cpuUsageString } from "./SystemMenuWidget/CPUMonitor";
 import { MemoryBar, memoryUsageString } from "./SystemMenuWidget/MemoryMonitor";
 import { MediaControl } from "./SystemMenuWidget/MediaControl";
 
-export const [showSysMenu, setShowSysMenu] = createState(false);
-export const [sysMenuClickLayerVisible, setSysMenuClickLayerVisible] = createState(false);
+export class SystemMenuStates {
+  public showSysMenu: Accessor<boolean>
+  public setShowSysMenu: Setter<boolean>
 
-export function SystemMenuWindow(gdkmonitor: Gdk.Monitor) {
+  public sysMenuClickLayerVisible: Accessor<boolean>
+  public setSysMenuClickLayerVisible: Setter<boolean>
+
+  public constructor() {
+    const [showSysMenu, setShowSysMenu] = createState(false);
+    const [sysMenuClickLayerVisible, setSysMenuClickLayerVisible] = createState(false);
+
+    this.showSysMenu = showSysMenu
+    this.setShowSysMenu = setShowSysMenu
+    this.sysMenuClickLayerVisible = sysMenuClickLayerVisible
+    this.setSysMenuClickLayerVisible = setSysMenuClickLayerVisible
+  }
+}
+
+export function SystemMenuWindow(gdkmonitor: Gdk.Monitor, states: SystemMenuStates) {
   const userName = GLib.getenv('USER')
     ?? GLib.get_user_name()
     ?? 'unknown';
@@ -19,7 +34,7 @@ export function SystemMenuWindow(gdkmonitor: Gdk.Monitor) {
     <revealer
       transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
       transitionDuration={250}
-      revealChild={showSysMenu}
+      revealChild={states.showSysMenu}
       halign={Gtk.Align.START}
       valign={Gtk.Align.START}
       vexpand={false}
@@ -100,7 +115,7 @@ export function SystemMenuWindow(gdkmonitor: Gdk.Monitor) {
         | Astal.WindowAnchor.TOP
         | Astal.WindowAnchor.BOTTOM}
       exclusivity={Astal.Exclusivity.NORMAL}
-      visible={sysMenuClickLayerVisible}
+      visible={states.sysMenuClickLayerVisible}
       child={sysMenuRevealer}
     >
     </window>
@@ -108,7 +123,7 @@ export function SystemMenuWindow(gdkmonitor: Gdk.Monitor) {
 
   sysMenuRevealer.connect('notify::child-revealed', () => {
     if (!sysMenuRevealer.child_revealed) {
-      setSysMenuClickLayerVisible(false);
+      states.setSysMenuClickLayerVisible(false);
     }
   });
 
@@ -118,7 +133,7 @@ export function SystemMenuWindow(gdkmonitor: Gdk.Monitor) {
 
   outsideClick.connect('pressed', (_g, _n, x, y) => {
     if (!sysMenuRevealer.contains(x, y)) {
-      setShowSysMenu(false);
+      states.setShowSysMenu(false);
     }
   });
   windowLayer.add_controller(outsideClick);

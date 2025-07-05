@@ -1,16 +1,31 @@
-import { Accessor, createState } from "ags";
+import { Accessor, createState, Setter } from "ags";
 import { Astal, Gdk, Gtk } from "ags/gtk4";
 import { createPoll } from "ags/time";
 
-export const [showCalendar, setShowCalendar] = createState(false);
-export const [calendarClickLayerVisible, setCalendarMenuClickLayerVisible] = createState(false);
+export class CalendarStates {
+  public showCalendar: Accessor<boolean>
+  public setShowCalendar: Setter<boolean>
 
-export function CalendarWindow(gdkmonitor: Gdk.Monitor) {
+  public calendarClickLayerVisible: Accessor<boolean>
+  public setCalendarMenuClickLayerVisible: Setter<boolean>
+
+  public constructor() {
+    const [showCalendar, setShowCalendar] = createState(false)
+    const [calendarClickLayerVisible, setCalendarMenuClickLayerVisible] = createState(false)
+
+    this.showCalendar = showCalendar
+    this.setShowCalendar = setShowCalendar
+    this.calendarClickLayerVisible = calendarClickLayerVisible
+    this.setCalendarMenuClickLayerVisible = setCalendarMenuClickLayerVisible
+  }
+}
+
+export function CalendarWindow(gdkmonitor: Gdk.Monitor, states: CalendarStates) {
   const calendarRevealer = (
     <revealer
       transitionType={Gtk.RevealerTransitionType.SLIDE_DOWN}
       transitionDuration={250}
-      revealChild={showCalendar}
+      revealChild={states.showCalendar}
       halign={Gtk.Align.CENTER}
       valign={Gtk.Align.START}
       vexpand={false}
@@ -34,7 +49,7 @@ export function CalendarWindow(gdkmonitor: Gdk.Monitor) {
         | Astal.WindowAnchor.TOP
         | Astal.WindowAnchor.BOTTOM}
       exclusivity={Astal.Exclusivity.NORMAL}
-      visible={calendarClickLayerVisible}
+      visible={states.calendarClickLayerVisible}
       child={calendarRevealer}
     >
     </window>
@@ -42,7 +57,7 @@ export function CalendarWindow(gdkmonitor: Gdk.Monitor) {
 
   calendarRevealer.connect('notify::child-revealed', () => {
     if (!calendarRevealer.child_revealed) {
-      setCalendarMenuClickLayerVisible(false);
+      states.setCalendarMenuClickLayerVisible(false);
     }
   });
 
@@ -53,7 +68,7 @@ export function CalendarWindow(gdkmonitor: Gdk.Monitor) {
     const alloc = calendarRevealer.get_allocation();
     if (!(xWin >= alloc.x && xWin <= alloc.x + alloc.width &&
       yWin >= alloc.y && yWin <= alloc.y + alloc.height)) {
-      setShowCalendar(false);
+      states.setShowCalendar(false);
     }
 
   });

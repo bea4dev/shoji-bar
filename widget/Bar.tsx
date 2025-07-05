@@ -1,38 +1,38 @@
 import app from "ags/gtk4/app"
 import { Astal, Gtk, Gdk } from "ags/gtk4"
 import { createPoll } from "ags/time"
-import {
-  showSysMenu,
-  setShowSysMenu,
-  SystemMenuWindow,
-  setSysMenuClickLayerVisible,
-  sysMenuClickLayerVisible,
-} from "./SystemMenu"
-import {
-  calendarClickLayerVisible,
-  CalendarWindow,
-  setCalendarMenuClickLayerVisible,
-  setShowCalendar,
-  showCalendar
-} from "./CustomCalendar"
+import { SystemMenuWindow, SystemMenuStates } from "./SystemMenu"
+import { CalendarStates, CalendarWindow } from "./CustomCalendar"
 import WorkspaceBar from "./WorkspaceBar"
 import SystemTray from "./SystemTray"
-import NotificationCenterWindow, {
-  notificationClickLayerVisible,
-  setNotificationClickLayerVisible,
-  setShowNotificationCenter,
-  showNotificationCenter
-} from "./Notifications"
-import NotificationPopups, { notifications } from "./NotificationPopup"
+import NotificationCenterWindow, { NotificationCenterStates } from "./Notifications"
+import NotificationPopups, { NotificationPopupStates } from "./NotificationPopup"
+import { createBinding, For } from "ags"
 
-export default function Bar(gdkmonitor: Gdk.Monitor) {
+export default function BarApp() {
+  const monitors = createBinding(app, "monitors")
+  return (
+    <For each={monitors} cleanup={(win) => (win as Gtk.Window).destroy()}>
+      {(monitor) => <Bar gdkmonitor={monitor} />}
+    </For>
+  );
+}
+
+function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   const time = createPoll("", 1000, "date '+%m/%d %H:%M'")
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor
 
-  SystemMenuWindow(gdkmonitor);
-  CalendarWindow(gdkmonitor);
-  NotificationCenterWindow(gdkmonitor);
-  NotificationPopups(gdkmonitor);
+  const sysMenuStates = new SystemMenuStates()
+  SystemMenuWindow(gdkmonitor, sysMenuStates)
+
+  const calendarStates = new CalendarStates()
+  CalendarWindow(gdkmonitor, calendarStates)
+
+  const notificationCenterStates = new NotificationCenterStates()
+  NotificationCenterWindow(gdkmonitor, notificationCenterStates)
+
+  const notificationPopupStates = new NotificationPopupStates()
+  NotificationPopups(gdkmonitor, notificationPopupStates)
 
   return (
     <window
@@ -53,10 +53,10 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         >
           <button
             onClicked={() => {
-              if (!sysMenuClickLayerVisible.get()) {
-                setSysMenuClickLayerVisible(true);
+              if (!sysMenuStates.sysMenuClickLayerVisible.get()) {
+                sysMenuStates.setSysMenuClickLayerVisible(true);
               }
-              setShowSysMenu(!showSysMenu.get());
+              sysMenuStates.setShowSysMenu(!sysMenuStates.showSysMenu.get());
             }}
             hexpand
             css={`margin: 2px 8px;`}
@@ -70,10 +70,10 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
         </box>
         <button $type="center" hexpand halign={Gtk.Align.CENTER}
           onClicked={() => {
-            if (!calendarClickLayerVisible.get()) {
-              setCalendarMenuClickLayerVisible(true);
+            if (!calendarStates.calendarClickLayerVisible.get()) {
+              calendarStates.setCalendarMenuClickLayerVisible(true);
             }
-            setShowCalendar(!showCalendar.get());
+            calendarStates.setShowCalendar(!calendarStates.showCalendar.get());
           }}>
           <label label={time} />
         </button>
@@ -86,16 +86,16 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
           <SystemTray />
           <button
             onClicked={() => {
-              if (!notificationClickLayerVisible.get()) {
-                setNotificationClickLayerVisible(true);
+              if (!notificationCenterStates.notificationClickLayerVisible.get()) {
+                notificationCenterStates.setNotificationClickLayerVisible(true);
               }
-              setShowNotificationCenter(!showNotificationCenter.get());
+              notificationCenterStates.setShowNotificationCenter(!notificationCenterStates.showNotificationCenter.get());
             }}
             hexpand
             css={`margin: 2px 8px;`}
           >
             <label
-              label={notifications(notifications => 
+              label={notificationPopupStates.notifications(notifications =>
                 notifications.length > 0 ? `   ${notifications.length} ` : `   ${notifications.length} `
               )}
               css={`font-family: monospace;margin-left: 3px;`}
