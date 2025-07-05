@@ -164,7 +164,7 @@ function NotificationCenter() {
     <scrolledwindow
       overlayScrolling={false}
       kineticScrolling={true}
-      css="min-width:350px;min-height:500px;"
+      css="min-width:350px;min-height:550px;"
     >
       <box orientation={Gtk.Orientation.VERTICAL} spacing={12}>
         <For each={notifications}>
