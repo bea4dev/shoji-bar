@@ -285,6 +285,24 @@ levelbar {
   }
 }
 
+window.OverlayDialog {
+  background: rgba(0,0,0,0.5);
+}
+
+box.dialog {
+  background: $bg;
+  padding: 16px;
+  border: 1px solid rgba(235,235,235,0.1);
+  border-radius: 6px;
+}
+
+box.dialog-out {
+  background: transparent;
+  border: 1px solid rgba(0,0,0,0.5);
+  border-radius: 5px;
+}
+
+
 *:focus {
   outline: none;
   outline-width: 0;

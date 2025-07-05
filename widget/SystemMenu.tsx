@@ -6,6 +6,8 @@ import { BrightnessSlider, brightnessString } from "./SystemMenuWidget/Brightnes
 import { CPUBar, cpuUsageString } from "./SystemMenuWidget/CPUMonitor";
 import { MemoryBar, memoryUsageString } from "./SystemMenuWidget/MemoryMonitor";
 import { MediaControl } from "./SystemMenuWidget/MediaControl";
+import OverlayDialog, { OverlayDialogStates } from "./OverlayDialog";
+import { execAsync } from "ags/process";
 
 export class SystemMenuStates {
   public showSysMenu: Accessor<boolean>
@@ -30,6 +32,18 @@ export function SystemMenuWindow(gdkmonitor: Gdk.Monitor, states: SystemMenuStat
     ?? GLib.get_user_name()
     ?? 'unknown';
 
+  const shutdownDialogStates = new OverlayDialogStates()
+  OverlayDialog("Shutdown?", () => execAsync("systemctl poweroff"), gdkmonitor, shutdownDialogStates)
+
+  const restartDialogStates = new OverlayDialogStates()
+  OverlayDialog("Restart?", () => execAsync("systemctl reboot"), gdkmonitor, restartDialogStates)
+
+  const logoutDialogStates = new OverlayDialogStates()
+  OverlayDialog("Logout?", () => execAsync("hyprctl dispatch exit"), gdkmonitor, logoutDialogStates)
+
+  const lockDialogStates = new OverlayDialogStates()
+  OverlayDialog("Lock?", () => execAsync("hyprlock"), gdkmonitor, lockDialogStates)
+
   const sysMenuRevealer = (
     <revealer
       transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
@@ -51,18 +65,18 @@ export function SystemMenuWindow(gdkmonitor: Gdk.Monitor, states: SystemMenuStat
             </box>
             <box orientation={Gtk.Orientation.VERTICAL} spacing={8} valign={Gtk.Align.END}>
               <box orientation={Gtk.Orientation.HORIZONTAL} spacing={8} valign={Gtk.Align.END}>
-                <button valign={Gtk.Align.END}>
+                <button valign={Gtk.Align.END} onClicked={() => shutdownDialogStates.setShowDialog(true)}>
                   <label label="" xalign={0.48} />
                 </button>
-                <button valign={Gtk.Align.END}>
+                <button valign={Gtk.Align.END} onClicked={() => restartDialogStates.setShowDialog(true)}>
                   <label label="" xalign={0.48} />
                 </button>
               </box>
               <box orientation={Gtk.Orientation.HORIZONTAL} spacing={8} valign={Gtk.Align.END}>
-                <button valign={Gtk.Align.END}>
-                  <label label="" xalign={0.45} />
+                <button valign={Gtk.Align.END} onClicked={() => logoutDialogStates.setShowDialog(true)}>
+                  <label label="" xalign={0.42} />
                 </button>
-                <button valign={Gtk.Align.END}>
+                <button valign={Gtk.Align.END} onClicked={() => lockDialogStates.setShowDialog(true)}>
                   <label label="" xalign={0.48} />
                 </button>
               </box>
