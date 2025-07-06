@@ -95,8 +95,8 @@ function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
             css={`margin: 2px 8px;`}
           >
             <label
-              label={notificationPopupStates.notifications(notifications =>
-                notifications.length > 0 ? `   ${notifications.length} ` : `   ${notifications.length} `
+              label={notificationPopupStates.notificationCount(count =>
+                count > 0 ? `   ${count} ` : `   ${count} `
               )}
               css={`font-family: monospace;margin-left: 3px;`}
             />
