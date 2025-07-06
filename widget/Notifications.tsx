@@ -90,6 +90,15 @@ export function NotificationBox({ notification, autoHide, outLine }
     setAutoHideNotifications(autoHideNotifications.get() + 1);
   }
 
+  var image
+  if (notification.image) {
+    image = <image file={notification.image} pixelSize={32} />
+  } else if(notification.appIcon) {
+    image = <image file={notification.appIcon} pixelSize={32} />
+  } else {
+    image = <image iconName="dialog-information-symbolic" pixelSize={32} />
+  }
+
   const revealer = (
     <revealer
       transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
@@ -102,9 +111,7 @@ export function NotificationBox({ notification, autoHide, outLine }
       <box class={outLine ? "notify-out" : "box"}>
         <box class="notify" orientation={Gtk.Orientation.HORIZONTAL} spacing={12}>
           {/* アイコン */}
-          {notification.appIcon
-            ? <image file={notification.appIcon} pixelSize={32} />
-            : <image iconName="dialog-information-symbolic" pixelSize={32} />}
+          {image}
 
           {/* タイトル+本文 */}
           <box orientation={Gtk.Orientation.VERTICAL} spacing={4}>
