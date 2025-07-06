@@ -33,7 +33,10 @@ export default function NotificationPopups(gdkmonitor: Gdk.Monitor, states: Noti
   });
 
   notifd.connect("resolved", (_, id) => {
-    states.setNotifications((ns) => ns.filter((n) => n.id !== id))
+    // delay remove (avoid freeze popdown animation)
+    setTimeout(() => {
+      states.setNotifications((ns) => ns.filter((n) => n.id !== id))
+    }, 5000)
   });
 
   return (
