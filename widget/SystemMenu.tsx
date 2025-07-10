@@ -3,11 +3,13 @@ import { Astal, Gdk, Gtk } from "ags/gtk4";
 import GLib from "gi://GLib";
 import { VolumeSlider, volumeString } from "./SystemMenuWidget/Volume";
 import { BrightnessSlider, brightnessString } from "./SystemMenuWidget/Brightness";
-import { CPUBar, cpuUsageString } from "./SystemMenuWidget/CPUMonitor";
-import { MemoryBar, memoryUsageString } from "./SystemMenuWidget/MemoryMonitor";
+import { CPUBar } from "./SystemMenuWidget/CPUMonitor";
 import { MediaControl } from "./SystemMenuWidget/MediaControl";
 import OverlayDialog, { OverlayDialogStates } from "./OverlayDialog";
 import { execAsync } from "ags/process";
+import { cpuUsageString } from "./Service/CPUMonitorService";
+import { MemoryBar } from "./SystemMenuWidget/MemoryMonitor";
+import { memoryUsageString } from "./Service/MemoryMonitorService";
 
 export class SystemMenuStates {
   public showSysMenu: Accessor<boolean>

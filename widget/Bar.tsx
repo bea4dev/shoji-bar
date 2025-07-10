@@ -8,6 +8,8 @@ import SystemTray from "./SystemTray"
 import NotificationCenterWindow, { NotificationCenterStates } from "./Notifications"
 import NotificationPopups, { NotificationPopupStates } from "./NotificationPopup"
 import { createBinding, For } from "ags"
+import { memoryUsageString } from "./Service/MemoryMonitorService"
+import { cpuUsageString } from "./Service/CPUMonitorService"
 
 export default function BarApp() {
   const monitors = createBinding(app, "monitors")
@@ -81,8 +83,16 @@ function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
           $type="end"
           halign={Gtk.Align.END}
           orientation={Gtk.Orientation.HORIZONTAL}
-          spacing={8}
+          spacing={16}
         >
+          <box orientation={Gtk.Orientation.HORIZONTAL}>
+            <label label=" " css="margin-top:-2px;" class="resource-label" />
+            <label label={cpuUsageString} css="font-family:monospace;" class="resource-label" />
+          </box>
+          <box orientation={Gtk.Orientation.HORIZONTAL}>
+            <label label=" " css="margin-top:-2px;" class="resource-label" />
+            <label label={memoryUsageString} css="font-family:monospace;" class="resource-label" />
+          </box>
           <SystemTray />
           <button
             onClicked={() => {

@@ -25,6 +25,10 @@ window.Bar {
   }
 }
 
+label.resource-label {
+  color: rgba(235, 235, 235, 1);
+}
+
 window.Bar > centerbox > .frame {
   /* ── 内側パネル (既存スタイル) ────────────── */
   > button,
