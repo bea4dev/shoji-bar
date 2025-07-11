@@ -93,11 +93,68 @@ export function NotificationBox({ notification, autoHide, outLine }
   var image
   if (notification.image) {
     image = <image file={notification.image} pixelSize={32} />
-  } else if(notification.appIcon) {
+  } else if (notification.appIcon) {
     image = <image file={notification.appIcon} pixelSize={32} />
   } else {
     image = <image iconName="dialog-information-symbolic" pixelSize={32} />
   }
+
+  const closeButton = (
+    <button
+      class="close-btn"
+      halign={Gtk.Align.END}
+      onClicked={() => {
+        isDismiss = true;
+        setShowNotification(false);
+      }}
+    >
+      <label label="" />
+    </button>
+  ) as Gtk.Button
+
+  const box = (
+    <box class={outLine ? "notify-out" : "box"}>
+      <box class="notify" orientation={Gtk.Orientation.HORIZONTAL} spacing={12}>
+        {/* アイコン */}
+        {image}
+
+        {/* タイトル+本文 */}
+        <box orientation={Gtk.Orientation.VERTICAL} spacing={4}>
+          <label label={notification.summary} css="font-weight:bold;" wrap
+            maxWidthChars={25}
+            widthChars={25}
+            wrapMode={Gtk.WrapMode.CHAR} />
+          <label
+            label={notification.body}
+            wrap
+            maxWidthChars={25}
+            widthChars={25}
+            wrapMode={Gtk.WrapMode.CHAR}
+          />
+          {notification.actions.filter(action => action.label !== "view" && action.label !== "View").map(action => (
+            <button label={action.label} onClicked={() => notification.invoke(action.id)} />
+          ))}
+        </box>
+
+        {/* × ボタン */}
+        {closeButton}
+      </box>
+    </box>
+  ) as Gtk.Box
+
+  const click = Gtk.GestureClick.new();
+  click.set_propagation_phase(Gtk.PropagationPhase.CAPTURE);
+  click.connect('pressed', (_g, _n, xRow, yRow) => {
+    const [_flag, inCloseX, inCloseY] = box.translate_coordinates(closeButton, xRow, yRow);
+
+    if (closeButton.contains(inCloseX, inCloseY)) {
+      return
+    }
+
+    notification.invoke("default")
+  });
+
+  box.add_controller(click);
 
   const revealer = (
     <revealer
@@ -108,39 +165,7 @@ export function NotificationBox({ notification, autoHide, outLine }
       valign={Gtk.Align.START}
       vexpand={false}
     >
-      <box class={outLine ? "notify-out" : "box"}>
-        <box class="notify" orientation={Gtk.Orientation.HORIZONTAL} spacing={12}>
-          {/* アイコン */}
-          {image}
-
-          {/* タイトル+本文 */}
-          <box orientation={Gtk.Orientation.VERTICAL} spacing={4}>
-            <label label={notification.summary} css="font-weight:bold;" wrap
-              maxWidthChars={25}
-              widthChars={25}
-              wrapMode={Gtk.WrapMode.CHAR} />
-            {<label
-              label={notification.body}
-              wrap
-              maxWidthChars={25}
-              widthChars={25}
-              wrapMode={Gtk.WrapMode.CHAR}
-            />}
-          </box>
-
-          {/* × ボタン */}
-          <button
-            class="close-btn"
-            halign={Gtk.Align.END}
-            onClicked={() => {
-              isDismiss = true;
-              setShowNotification(false);
-            }}
-          >
-            <label label="" />
-          </button>
-        </box>
-      </box>
+      {box}
     </revealer>
   ) as Gtk.Revealer;
 
