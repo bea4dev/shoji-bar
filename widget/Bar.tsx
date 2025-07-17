@@ -86,11 +86,11 @@ function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
           spacing={16}
         >
           <box orientation={Gtk.Orientation.HORIZONTAL}>
-            <label label=" " css="margin-top:-2px;" class="resource-label" />
+            <label label=" " css="margin-top:-2px;font-family:monospace;" class="resource-label" />
             <label label={cpuUsageString} css="font-family:monospace;" class="resource-label" />
           </box>
           <box orientation={Gtk.Orientation.HORIZONTAL}>
-            <label label=" " css="margin-top:-2px;" class="resource-label" />
+            <label label=" " css="margin-top:-2px;font-family:monospace;" class="resource-label" />
             <label label={memoryUsageString} css="font-family:monospace;" class="resource-label" />
           </box>
           <SystemTray />

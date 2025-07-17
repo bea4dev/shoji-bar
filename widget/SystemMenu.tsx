@@ -86,13 +86,13 @@ export function SystemMenuWindow(gdkmonitor: Gdk.Monitor, states: SystemMenuStat
           </box>
           <box orientation={Gtk.Orientation.VERTICAL} spacing={16}>
             <box orientation={Gtk.Orientation.HORIZONTAL}>
-              <label label=" " css="margin-top:-2px;" />
+              <label label=" " css="margin-top:-2px;font-family:monospace;" />
               <label label={volumeString} css="font-family:monospace;" />
               <label label="  " />
               <VolumeSlider />
             </box>
             <box orientation={Gtk.Orientation.HORIZONTAL}>
-              <label label=" " css="margin-top:-2px;" />
+              <label label=" " css="margin-top:-2px;font-family:monospace;" />
               <label label={brightnessString} css="font-family:monospace;" />
               <label label="  " />
               <BrightnessSlider />
@@ -100,13 +100,13 @@ export function SystemMenuWindow(gdkmonitor: Gdk.Monitor, states: SystemMenuStat
           </box>
           <box orientation={Gtk.Orientation.VERTICAL} spacing={16}>
             <box orientation={Gtk.Orientation.HORIZONTAL}>
-              <label label=" " css="margin-top:-2px;" />
+              <label label=" " css="margin-top:-2px;font-family:monospace;" />
               <label label={cpuUsageString} css="font-family:monospace;" />
               <label label="  " />
               <CPUBar />
             </box>
             <box orientation={Gtk.Orientation.HORIZONTAL}>
-              <label label=" " css="margin-top:-2px;" />
+              <label label=" " css="margin-top:-2px;font-family:monospace;" />
               <label label={memoryUsageString} css="font-family:monospace;" />
               <label label="  " />
               <MemoryBar />
