@@ -47,7 +47,9 @@ export default function NotificationPopups(gdkmonitor: Gdk.Monitor, states: Noti
     }, 5000)
 
     // non delayed count
-    states.setNotificationCount((count) => count - 1)
+    if (states.notifications.get().find((notif) => notif.id === id)) {
+      states.setNotificationCount((count) => Math.max(count - 1, 0))
+    }
   });
 
   return (
