@@ -3,6 +3,8 @@ import AstalNotifd from "gi://AstalNotifd"
 import { Accessor, For, Setter, createState } from "ags"
 import { autoHideNotifications, NotificationBox } from "./Notifications"
 
+export const [enableNotificationPopup, setEnableNotificationPopup] = createState(true)
+
 export class NotificationPopupStates {
   public notifications: Accessor<Array<AstalNotifd.Notification>>
   public setNotifications: Setter<Array<AstalNotifd.Notification>>
@@ -56,7 +58,7 @@ export default function NotificationPopups(gdkmonitor: Gdk.Monitor, states: Noti
     <window
       class="NotificationPopups"
       gdkmonitor={gdkmonitor}
-      visible={autoHideNotifications(notifications => notifications > 0)}
+      visible={autoHideNotifications(notifications => notifications > 0 && enableNotificationPopup.get())}
       anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT}
     >
       <box orientation={Gtk.Orientation.VERTICAL} spacing={12}>

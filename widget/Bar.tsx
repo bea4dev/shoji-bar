@@ -6,8 +6,8 @@ import { CalendarStates, CalendarWindow } from "./CustomCalendar"
 import WorkspaceBar from "./WorkspaceBar"
 import SystemTray from "./SystemTray"
 import NotificationCenterWindow, { NotificationCenterStates } from "./Notifications"
-import NotificationPopups, { NotificationPopupStates } from "./NotificationPopup"
-import { createBinding, For } from "ags"
+import NotificationPopups, { enableNotificationPopup, NotificationPopupStates, setEnableNotificationPopup } from "./NotificationPopup"
+import { Accessor, createBinding, createState, For } from "ags"
 import { memoryUsageString } from "./Service/MemoryMonitorService"
 import { cpuUsageString } from "./Service/CPUMonitorService"
 
@@ -35,6 +35,53 @@ function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
 
   const notificationPopupStates = new NotificationPopupStates()
   NotificationPopups(gdkmonitor, notificationPopupStates)
+
+  const [notificationLabel, setNotificationLabel] = createState("")
+
+  const updateNotificationLabel = () => {
+    const count = notificationPopupStates.notificationCount.get()
+    setNotificationLabel(
+      !enableNotificationPopup.get() ? `   ${count} ` : count > 0 ? `   ${count} ` : `   ${count} `
+    )
+  }
+  updateNotificationLabel()
+
+  enableNotificationPopup.subscribe(updateNotificationLabel)
+  notificationPopupStates.notificationCount.subscribe(updateNotificationLabel)
+
+  const notificationButton = (
+    <button
+      onClicked={() => {
+        if (!notificationCenterStates.notificationClickLayerVisible.get()) {
+          notificationCenterStates.setNotificationClickLayerVisible(true);
+        }
+        notificationCenterStates.setShowNotificationCenter(!notificationCenterStates.showNotificationCenter.get());
+      }}
+      hexpand
+      css={`margin: 2px 8px;`}
+    >
+      <label
+        label={notificationLabel}
+        css={`font-family: monospace;margin-left: 3px;`}
+      />
+    </button>
+  ) as Gtk.Button
+
+  const gesture = Gtk.GestureClick.new()
+  gesture.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
+  gesture.set_button(3)
+
+  // 右クリック時
+  gesture.connect("pressed", () => {
+    setEnableNotificationPopup(!enableNotificationPopup.get())
+    createState
+  });
+
+  enableNotificationPopup.subscribe(() =>
+    notificationPopupStates.setNotificationCount(notificationPopupStates.notificationCount.get())
+  )
+
+  notificationButton.add_controller(gesture)
 
   return (
     <window
@@ -94,23 +141,7 @@ function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
             <label label={memoryUsageString} css="font-family:monospace;" class="resource-label" />
           </box>
           <SystemTray />
-          <button
-            onClicked={() => {
-              if (!notificationCenterStates.notificationClickLayerVisible.get()) {
-                notificationCenterStates.setNotificationClickLayerVisible(true);
-              }
-              notificationCenterStates.setShowNotificationCenter(!notificationCenterStates.showNotificationCenter.get());
-            }}
-            hexpand
-            css={`margin: 2px 8px;`}
-          >
-            <label
-              label={notificationPopupStates.notificationCount(count =>
-                count > 0 ? `   ${count} ` : `   ${count} `
-              )}
-              css={`font-family: monospace;margin-left: 3px;`}
-            />
-          </button>
+          {notificationButton}
         </box>
       </centerbox>
     </window>
