@@ -10,6 +10,7 @@ import NotificationPopups, { enableNotificationPopup, NotificationPopupStates, s
 import { Accessor, createBinding, createState, For } from "ags"
 import { memoryUsageString } from "./Service/MemoryMonitorService"
 import { cpuUsageString } from "./Service/CPUMonitorService"
+import BatteryMenu from "./BatteryMenu"
 
 export default function BarApp() {
   const monitors = createBinding(app, "monitors")
@@ -140,6 +141,7 @@ function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
             <label label=" " css="margin-top:-2px;font-family:monospace;" class="resource-label" />
             <label label={memoryUsageString} css="font-family:monospace;" class="resource-label" />
           </box>
+          <BatteryMenu />
           <SystemTray />
           {notificationButton}
         </box>
