@@ -27,6 +27,11 @@ export function BrightnessSlider() {
         const val = Math.round(slider.get_value());
         /* ③ 変更を反映 */
         execAsync(`brightnessctl s ${val}%`);
+        try {
+          execAsync(`blctl s ${val}`);
+        } catch {
+          console.warn("'blctl' is not found.");
+        };
         setBrightness(val);            // 即座に状態へ反映
         setBrightnessString(val.toString().padStart(3, " "));
       }}
