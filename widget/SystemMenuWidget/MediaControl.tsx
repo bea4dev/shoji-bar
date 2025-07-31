@@ -1,61 +1,62 @@
-import { createState } from "ags";
-import { Gtk } from "ags/gtk4";
-import { execAsync } from "ags/process";
+import { createState } from "ags"
+import { Gtk } from "ags/gtk4"
+import AstalMpris from "gi://AstalMpris?version=0.1"
 
-const [isPlaying, setIsPlaying] = createState(false);
-const [playingIcon, setPlayingIcon] = createState("");
+const [isPlaying, setIsPlaying] = createState(false)
+const [playingIcon, setPlayingIcon] = createState("")
 /* 曲情報 */
-const [title, setTitle] = createState("—");
-const [artist, setArtist] = createState("—");
+const [title, setTitle] = createState("—")
+const [artist, setArtist] = createState("—")
 
-/* 1 秒ごとに playerctl で最新状態を取得 */
-setInterval(async () => {
-  try {
-    /* metadata: {{artist}}\t{{title}} */
-    const meta = await execAsync(
-      `playerctl metadata --format '{{artist}}\\t{{title}}'`
-    );
-    const [a, t] = meta.trim().split("\\t");
-    setArtist(a || "Unknown");
-    setTitle(t || "No Title");
+const [duration, setDuration] = createState(0)   // 曲全体 [s]
+const [position, setPosition] = createState(0)   // 現在位置 [s]
 
-    /* status: Playing / Paused / Stopped */
-    const stat = (await execAsync("playerctl status")).trim();
-    if (stat === "Playing") {
-      setIsPlaying(true);
-      setPlayingIcon("");
-    } else {
-      setIsPlaying(false);
-      setPlayingIcon("");
+const mpris = AstalMpris.get_default()
+const connected = new WeakSet<AstalMpris.Player>()
+
+function initPlayer() {
+  for (let player of mpris.get_players()) {
+    if (connected.has(player)) {
+      continue
     }
-  } catch {
-    /* 再生していない or playerctl なし */
-    setArtist("—");
-    setTitle("—");
-    setIsPlaying(false);
-    setPlayingIcon("");
-  }
-}, 1000);
+    connected.add(player)
 
-const [duration, setDuration] = createState(0);   // 曲全体 [s]
-const [position, setPosition] = createState(0);   // 現在位置 [s]
+    player.connect("notify::trackid", () => {
+      player.set_position(0)
+    })
+  }
+}
+
+initPlayer()
+mpris.connect("notify::players", initPlayer)
 
 setInterval(async () => {
-  try {
-    /* --- 再生位置 (s) --- */
-    const posUs = Number(await execAsync("playerctl position")) || 0;
-    setPosition(Math.round(posUs));
+  const player = mpris.get_players().at(0)
 
-    /* --- 曲全長 (µs) --- */
-    const lenUs = Number(
-      await execAsync("playerctl metadata -f '{{mpris:length}}'")
-    ) || 0;
-    setDuration(Math.round(lenUs / 1e6));
-  } catch {
-    setPosition(0);
-    setDuration(0);
+  if (!player || player.playback_status === AstalMpris.PlaybackStatus.STOPPED) {
+    setArtist("—")
+    setTitle("—")
+    setIsPlaying(false)
+    setPlayingIcon("")
+    setPosition(0)
+    setDuration(0)
+    return
   }
-}, 1000);
+
+  setArtist(player.artist)
+  setTitle(player.title)
+
+  if (player.playback_status === AstalMpris.PlaybackStatus.PLAYING) {
+    setIsPlaying(true)
+    setPlayingIcon("")
+  } else {
+    setIsPlaying(false)
+    setPlayingIcon("")
+  }
+
+  setPosition(player.position)
+  setDuration(player.length)
+}, 1000)
 
 function SeekBar() {
   return (
@@ -67,15 +68,20 @@ function SeekBar() {
       drawValue={false}
       step={1}
       onChangeValue={(widget) => {
+        const player = mpris.get_players().at(0)
+        if (!player) {
+          return false
+        }
+
         /* ボタンを離したタイミングでシークを確定 */
-        const sec = Math.round(widget.get_value());
-        execAsync(`playerctl position ${sec}`); /* ← 秒単位でシーク */
-        setPosition(sec);                   // 即時UI更新
+        const sec = widget.get_value()
+        player.set_position(sec) /* ← 秒単位でシーク */
+        setPosition(sec)                   // 即時UI更新
         return false;                           // イベントは後続へ流す
       }}
       cssName="slider"
     />
-  );
+  )
 }
 
 export function MediaControl() {
@@ -103,7 +109,13 @@ export function MediaControl() {
 
         {/* ◀ previous */}
         <button
-          onClicked={() => execAsync("playerctl previous")}
+          onClicked={() => {
+            const player = mpris.get_players().at(0)
+            if (!player) {
+              return false
+            }
+            player.previous();
+          }}
         >
           <label label="" />
         </button>
@@ -111,15 +123,20 @@ export function MediaControl() {
         {/* ⏯ play / pause トグル */}
         <button
           onClicked={() => {
-            execAsync("playerctl play-pause");
+            const player = mpris.get_players().at(0)
+            if (!player) {
+              return false
+            }
 
             if (isPlaying.get()) {
-              setIsPlaying(false);
-              setPlayingIcon("");
+              setIsPlaying(false)
+              setPlayingIcon("")
+              player.pause()
             } else {
-              setIsPlaying(false);
-              setPlayingIcon("");
-            }
+              setIsPlaying(true)
+              setPlayingIcon("")
+              player.play()
+            };
           }}
         >
           <label
@@ -129,11 +146,17 @@ export function MediaControl() {
 
         {/* ▶ next */}
         <button
-          onClicked={() => execAsync("playerctl next")}
+          onClicked={() => {
+            const player = mpris.get_players().at(0)
+            if (!player) {
+              return false
+            }
+            player.next();
+          }}
         >
           <label label="" />
         </button>
       </box>
     </box>
-  );
+  )
 }
