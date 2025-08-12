@@ -13,6 +13,7 @@ const [position, setPosition] = createState(0)   // 現在位置 [s]
 
 const mpris = AstalMpris.get_default()
 const connected = new WeakSet<AstalMpris.Player>()
+const played = new Set<string>()
 
 function initPlayer() {
   for (let player of mpris.get_players()) {
@@ -22,7 +23,10 @@ function initPlayer() {
     connected.add(player)
 
     player.connect("notify::trackid", () => {
-      player.set_position(0)
+      if (!played.has(player.trackid)) {
+        played.add(player.trackid)
+        player.set_position(0)
+      }
     })
   }
 }
