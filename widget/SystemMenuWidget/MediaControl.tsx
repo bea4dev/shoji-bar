@@ -22,11 +22,16 @@ function initPlayer() {
     }
     connected.add(player)
 
+    let prevTrack = ""
     player.connect("notify::trackid", () => {
-      if (!played.has(player.trackid)) {
+      // ChromeのYoutubeミックスリストの再生切り替え時には"NoTrack"が挟まる
+      // これを使ってpositionを0にすることで、Chromeが再生位置を更新しない問題を回避する
+      if (prevTrack.includes("NoTrack")) {
         played.add(player.trackid)
         player.set_position(0)
       }
+
+      prevTrack = player.trackid
     })
   }
 }
