@@ -198,7 +198,7 @@ window.NotificationCenter {
           background: $bg;
           padding: 16px;
           border: 1px solid rgba(235,235,235,0.1);
-          border-radius: 6px;
+          border-radius: 5px;
         }
 
         /* ボタンは Bar と同じ */
@@ -242,7 +242,7 @@ box.notify {
   background: $bg;
   padding: 16px;
   border: 1px solid rgba(235,235,235,0.1);
-  border-radius: 6px;
+  border-radius: 5px;
 }
 
 box.notify-out {
@@ -297,7 +297,7 @@ box.dialog {
   background: $bg;
   padding: 16px;
   border: 1px solid rgba(235,235,235,0.1);
-  border-radius: 6px;
+  border-radius: 5px;
 }
 
 box.dialog-out {
@@ -330,7 +330,7 @@ popover.background.menu {
 /* ルートノードは ‘calendar.view’ */
 calendar.view {
   background: rgba(71, 83, 88, 0.24);
-  border-radius: 8px;
+  border-radius: 5px;
   padding: 6px;
 }
 /* 曜日ヘッダ・週番号ラベル */

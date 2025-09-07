@@ -13,7 +13,6 @@ const [position, setPosition] = createState(0)   // 現在位置 [s]
 
 const mpris = AstalMpris.get_default()
 const connected = new WeakSet<AstalMpris.Player>()
-const played = new Set<string>()
 
 function initPlayer() {
   for (let player of mpris.get_players()) {
@@ -26,8 +25,11 @@ function initPlayer() {
     player.connect("notify::trackid", () => {
       // ChromeのYoutubeミックスリストの再生切り替え時には"NoTrack"が挟まる
       // これを使ってpositionを0にすることで、Chromeが再生位置を更新しない問題を回避する
+      //
+      // * 追記
+      // どうやらFirefoxも同じバグを抱えているらしい
+      // https://bugzilla.mozilla.org/show_bug.cgi?id=1979495
       if (prevTrack.includes("NoTrack")) {
-        played.add(player.trackid)
         player.set_position(0)
       }
 
