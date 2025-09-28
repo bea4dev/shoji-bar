@@ -10,6 +10,7 @@ import { execAsync } from "ags/process";
 import { cpuUsageString } from "./Service/CPUMonitorService";
 import { MemoryBar } from "./SystemMenuWidget/MemoryMonitor";
 import { memoryUsageString } from "./Service/MemoryMonitorService";
+import GdkPixbuf from "gi://GdkPixbuf";
 
 export class SystemMenuStates {
   public showSysMenu: Accessor<boolean>
@@ -46,6 +47,14 @@ export function SystemMenuWindow(gdkmonitor: Gdk.Monitor, states: SystemMenuStat
   const lockDialogStates = new OverlayDialogStates()
   OverlayDialog("Lock?", () => execAsync("hyprlock"), gdkmonitor, lockDialogStates)
 
+  function textureScaled(path: string, w: number, h: number) {
+    const pb = GdkPixbuf.Pixbuf.new_from_file(path);
+    const scaled = pb.scale_simple(w, h, GdkPixbuf.InterpType.BILINEAR);
+    return Gdk.Texture.new_for_pixbuf(scaled!);
+  }
+
+  const tex = textureScaled(`/home/${userName}/Pictures/icon.png`, 128, 128);
+
   const sysMenuRevealer = (
     <revealer
       transitionType={Gtk.RevealerTransitionType.SLIDE_RIGHT}
@@ -60,9 +69,12 @@ export function SystemMenuWindow(gdkmonitor: Gdk.Monitor, states: SystemMenuStat
           <box orientation={Gtk.Orientation.HORIZONTAL} spacing={12}>
             <box orientation={Gtk.Orientation.VERTICAL} spacing={6}>
               <label label={userName} css="font-size:18px;" />
-              <image
-                file={"/home/" + userName + "/Pictures/icon.png"}
-                css="min-width:128px; min-height:128px;"
+              <Gtk.Picture
+                paintable={tex}
+                widthRequest={128}
+                heightRequest={128}
+                overflow={Gtk.Overflow.HIDDEN}
+                //css="all:unset; margin:0; padding:0; border:none; outline:none;"
               />
             </box>
             <box orientation={Gtk.Orientation.VERTICAL} spacing={8} valign={Gtk.Align.END}>
