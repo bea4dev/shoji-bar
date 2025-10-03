@@ -11,6 +11,7 @@ import { Accessor, createBinding, createState, For } from "ags"
 import { memoryUsageString } from "./Service/MemoryMonitorService"
 import { cpuUsageString } from "./Service/CPUMonitorService"
 import BatteryMenu from "./BatteryMenu"
+import ForceUpdate from "./ForceUpdate"
 
 export default function BarApp() {
   const monitors = createBinding(app, "monitors")
@@ -133,6 +134,7 @@ function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
           orientation={Gtk.Orientation.HORIZONTAL}
           spacing={16}
         >
+          <ForceUpdate />
           <box orientation={Gtk.Orientation.HORIZONTAL}>
             <label label=" " css="margin-top:-2px;font-family:monospace;" class="resource-label" />
             <label label={cpuUsageString} css="font-family:monospace;" class="resource-label" />
