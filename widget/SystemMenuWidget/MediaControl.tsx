@@ -1,3 +1,9 @@
+/**
+ * Mprisを使用して曲の取得や再生位置の取得を行う
+ * ただし、Youtubeの連続再生時に再生位置が更新されない不具合が存在している
+ * その不具合に遭遇した場合は以下のChrome & Firefox向け拡張機能を使用すべし
+ * https://github.com/d1BG/youtube-mpris-fix
+ */
 import { createState } from "ags"
 import { Gtk } from "ags/gtk4"
 import AstalMpris from "gi://AstalMpris?version=0.1"
@@ -12,34 +18,6 @@ const [duration, setDuration] = createState(0)   // 曲全体 [s]
 const [position, setPosition] = createState(0)   // 現在位置 [s]
 
 const mpris = AstalMpris.get_default()
-const connected = new WeakSet<AstalMpris.Player>()
-
-function initPlayer() {
-  for (let player of mpris.get_players()) {
-    if (connected.has(player)) {
-      continue
-    }
-    connected.add(player)
-
-    let prevTrack = ""
-    player.connect("notify::trackid", () => {
-      // ChromeのYoutubeミックスリストの再生切り替え時には"NoTrack"が挟まる
-      // これを使ってpositionを0にすることで、Chromeが再生位置を更新しない問題を回避する
-      //
-      // * 追記
-      // どうやらFirefoxも同じバグを抱えているらしい
-      // https://bugzilla.mozilla.org/show_bug.cgi?id=1979495
-      if (prevTrack.includes("NoTrack")) {
-        player.set_position(0)
-      }
-
-      prevTrack = player.trackid
-    })
-  }
-}
-
-initPlayer()
-mpris.connect("notify::players", initPlayer)
 
 setInterval(async () => {
   const player = mpris.get_players().at(0)
