@@ -61,7 +61,7 @@ export default function NotificationPopups(gdkmonitor: Gdk.Monitor, states: Noti
       visible={autoHideNotifications(notifications => notifications > 0 && enableNotificationPopup.get())}
       anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT}
     >
-      <box orientation={Gtk.Orientation.VERTICAL} spacing={12}>
+      <box orientation={Gtk.Orientation.VERTICAL} spacing={12} css={"min-width:350px;"}>
         <For each={states.notifications}>
           {(notification) => (
             <NotificationBox notification={notification} autoHide={true} outLine={true} />
