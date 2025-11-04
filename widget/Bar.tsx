@@ -12,6 +12,7 @@ import { memoryUsageString } from "./Service/MemoryMonitorService"
 import { cpuUsageString } from "./Service/CPUMonitorService"
 import BatteryMenu from "./BatteryMenu"
 import ForceUpdate from "./ForceUpdate"
+import Applauncher from "./AppLauncher"
 
 export default function BarApp() {
   const monitors = createBinding(app, "monitors")
@@ -24,7 +25,9 @@ export default function BarApp() {
 
 function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   const time = createPoll("", 1000, "date '+%m/%d %H:%M'")
-  const { TOP, LEFT, RIGHT } = Astal.WindowAnchor
+  const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
+
+  <Applauncher gdkmonitor={gdkmonitor} />
 
   const sysMenuStates = new SystemMenuStates()
   SystemMenuWindow(gdkmonitor, sysMenuStates)

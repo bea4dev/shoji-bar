@@ -4,13 +4,13 @@ window.Bar {
   background: transparent;
   color: $bg;
   font-weight: bold;
-  border-bottom: 1px solid rgba(0,0,0,0.4);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
 
-  > centerbox {
+  >centerbox {
     background: $bg;
     border-radius: 0px;
     padding: 2px;
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 
     button {
       border-radius: 5px;
@@ -18,7 +18,7 @@ window.Bar {
       padding: 1px 6px;
     }
 
-    menubutton > button.toggle:checked {
+    menubutton>button.toggle:checked {
       background: rgba(235, 235, 235, 0.2);
       color: rgba(235, 235, 235, 1);
     }
@@ -29,10 +29,11 @@ label.resource-label {
   color: rgba(235, 235, 235, 1);
 }
 
-window.Bar > centerbox > .frame {
+window.Bar>centerbox>.frame {
+
   /* ── 内側パネル (既存スタイル) ────────────── */
-  > button,
-  > menubutton {
+  >button,
+  >menubutton {
     background: $bg;
     border-radius: 5px;
     margin: 0 4px;
@@ -40,7 +41,7 @@ window.Bar > centerbox > .frame {
   }
 
   /* menubutton ON 状態 */
-  menubutton > button.toggle:checked {
+  menubutton>button.toggle:checked {
     background: rgba(235, 235, 235, 0.20);
     color: rgba(235, 235, 235, 1);
   }
@@ -54,8 +55,13 @@ button.ws-btn {
   border-radius: 4px;
   transition: background 120ms;
 
-  &:hover  { background: rgba(235,235,235,.08); }
-  &:active { background: rgba(235,235,235,.16); }
+  &:hover {
+    background: rgba(235, 235, 235, .08);
+  }
+
+  &:active {
+    background: rgba(235, 235, 235, .16);
+  }
 }
 
 button.ws-btn.active {
@@ -64,16 +70,23 @@ button.ws-btn.active {
 }
 
 frame.noti-row {
-  background: rgba(71,83,88,.24);
+  background: rgba(71, 83, 88, .24);
   border-radius: 8px;
 }
 
 button.close-btn {
-  padding:2px; min-width:20px; background:transparent;
-  &:hover { background: rgba(235,235,235,.1); }
+  padding: 2px;
+  min-width: 20px;
+  background: transparent;
+
+  &:hover {
+    background: rgba(235, 235, 235, .1);
+  }
 }
 
-scrolledwindow > box { padding: 8px; }
+scrolledwindow>box {
+  padding: 8px;
+}
 
 /*───────────────────────────────────────────────
   System Menu – left-slide panel
@@ -83,28 +96,29 @@ window.SysMenu {
   background: transparent;
 
   /* Revealer が展開したときのコンテナ */
-  > revealer {
+  >revealer {
+
     /* ──パネル本体────────────────────────── */
-    > box {
+    >box {
       background: transparent;
-      border: 1px solid rgba(0,0,0,0.5);
+      border: 1px solid rgba(0, 0, 0, 0.5);
       border-radius: 5px;
 
-      > box {
+      >box {
         background: transparent;
         padding: 8px;
-        border: 1px solid rgba(235,235,235,0.1);
+        border: 1px solid rgba(235, 235, 235, 0.1);
         border-radius: 4px;
 
-        > box {
+        >box {
           background: $bg;
           padding: 16px;
-          border: 1px solid rgba(235,235,235,0.1);
+          border: 1px solid rgba(235, 235, 235, 0.1);
           border-radius: 6px;
         }
 
         /* タイトル行 */
-        > label.title {
+        >label.title {
           font-weight: bold;
           color: rgba(235, 235, 235, 1);
           margin-bottom: 8px;
@@ -128,31 +142,38 @@ window.CalandarMenu {
   background: transparent;
 
   /* Revealer が展開したときのコンテナ */
-  > revealer {
+  >revealer {
+
     /* ──パネル本体────────────────────────── */
-    > box {
+    >box {
       min-width: 240px;
       background: transparent;
-      border: 1px solid rgba(0,0,0,0.5);
+      border: 1px solid rgba(0, 0, 0, 0.5);
       border-radius: 5px;
 
-      > box {
+      >box {
         min-width: 240px;
         background: transparent;
         padding: 8px;
-        border: 1px solid rgba(235,235,235,0.1);
+        border: 1px solid rgba(235, 235, 235, 0.1);
         border-radius: 5px;
 
-        > box {
-          > label {
+        >box {
+          >label {
             font-family: monospace;
-            border: 1px solid rgba(71, 83, 88, 1); /* 枠線の色と太さ */
+            border: 1px solid rgba(71, 83, 88, 1);
+            /* 枠線の色と太さ */
             background: rgba(71, 83, 88, 0.24);
-            border-radius: 6px;             /* 角丸 */
-            padding: 8px 8px;               /* 枠と文字の余白 */
-            font-size: 16pt;                /* 文字サイズ */
-            font-weight: bold;              /* 太字 */
-            color: rgba(235, 235, 235, 1);  /* 文字色（任意） */
+            border-radius: 6px;
+            /* 角丸 */
+            padding: 8px 8px;
+            /* 枠と文字の余白 */
+            font-size: 16pt;
+            /* 文字サイズ */
+            font-weight: bold;
+            /* 太字 */
+            color: rgba(235, 235, 235, 1);
+            /* 文字色（任意） */
           }
         }
 
@@ -179,25 +200,26 @@ window.NotificationCenter {
   background: transparent;
 
   /* Revealer が展開したときのコンテナ */
-  > revealer {
+  >revealer {
+
     /* ──パネル本体────────────────────────── */
-    > box {
+    >box {
       min-width: 240px;
       background: transparent;
-      border: 1px solid rgba(0,0,0,0.5);
+      border: 1px solid rgba(0, 0, 0, 0.5);
       border-radius: 5px;
 
-      > box {
+      >box {
         min-width: 240px;
         background: transparent;
         padding: 8px;
-        border: 1px solid rgba(235,235,235,0.1);
+        border: 1px solid rgba(235, 235, 235, 0.1);
         border-radius: 5px;
 
-        > box {
+        >box {
           background: $bg;
           padding: 16px;
-          border: 1px solid rgba(235,235,235,0.1);
+          border: 1px solid rgba(235, 235, 235, 0.1);
           border-radius: 5px;
         }
 
@@ -218,9 +240,9 @@ scrollbar {
   min-height: 1px;
   background: transparent;
 
-  > range {
-      background: rgba(235, 235, 235, 0.1);
-      border-radius: 4px;
+  >range {
+    background: rgba(235, 235, 235, 0.1);
+    border-radius: 4px;
   }
 
   /* ─ スライダー (handle) ─────────────── */
@@ -232,23 +254,28 @@ scrollbar {
     transition: background 120ms;
 
     /* ホバー時はやや濃く */
-    &:hover  { background: rgba(235, 235, 235, 0.30); }
+    &:hover {
+      background: rgba(235, 235, 235, 0.30);
+    }
+
     /* ドラッグ中は更に濃く */
-    &:active { background: rgba(235, 235, 235, 0.50); }
+    &:active {
+      background: rgba(235, 235, 235, 0.50);
+    }
   }
 }
 
 box.notify {
   background: $bg;
   padding: 16px;
-  border: 1px solid rgba(235,235,235,0.1);
+  border: 1px solid rgba(235, 235, 235, 0.1);
   border-radius: 5px;
 }
 
 box.notify-out {
   min-width: 240px;
   background: transparent;
-  border: 1px solid rgba(0,0,0,0.5);
+  border: 1px solid rgba(0, 0, 0, 0.5);
   border-radius: 5px;
 }
 
@@ -257,12 +284,14 @@ slider {
   margin-top: 0px;
 
   trough {
-    background: rgba(235,235,235,.08);
+    background: rgba(235, 235, 235, .08);
     border-radius: 4px;
   }
+
   highlight {
     background: rgba(219, 234, 236, 0.5);
   }
+
   slider {
     background: #cdd6f4;
     border-radius: 5px;
@@ -290,19 +319,19 @@ levelbar {
 }
 
 window.OverlayDialog {
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
 }
 
 box.dialog {
   background: $bg;
   padding: 16px;
-  border: 1px solid rgba(235,235,235,0.1);
+  border: 1px solid rgba(235, 235, 235, 0.1);
   border-radius: 5px;
 }
 
 box.dialog-out {
   background: transparent;
-  border: 1px solid rgba(0,0,0,0.5);
+  border: 1px solid rgba(0, 0, 0, 0.5);
   border-radius: 5px;
 }
 
@@ -316,11 +345,11 @@ popover.background,
 popover.background.menu {
   border-radius: 8px;
 
-  > arrow {
+  >arrow {
     background-color: $bg;
   }
 
-  > contents {
+  >contents {
     background-color: $bg;
     background-image: none;
     padding: 8px;
@@ -333,27 +362,57 @@ calendar.view {
   border-radius: 5px;
   padding: 6px;
 }
+
 /* 曜日ヘッダ・週番号ラベル */
 calendar.view header,
 calendar.view label.day-name {
   color: rgba(235, 235, 235, 1);
 }
+
 /* 通常の日付 */
 calendar.view label.day-number {
   color: #cdd6f4;
 }
+
 /* 今日 */
 calendar.view label.today {
   background: #89b4fa;
   color: #1e1e2e;
   border-radius: 4px;
 }
+
 /* 選択中 */
 calendar.view label:selected {
   background: rgba(235, 235, 235, 1);
   color: #1e1e2e;
 }
+
 /* 前後月の薄色 */
 calendar.view label.other-month {
   color: #7f849c;
+}
+
+window.launcher {
+  background: rgba(0, 0, 0, 0.0);
+}
+
+box.launcher {
+  background: $bg;
+  padding: 16px;
+  border: 1px solid rgba(235, 235, 235, 0.1);
+  border-radius: 5px;
+}
+
+box.launcher-out {
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+}
+
+entry.launcher-text-box {
+  border-radius: 5px;
+}
+
+button.launcher-app-button {
+  border-radius: 5px;
 }
