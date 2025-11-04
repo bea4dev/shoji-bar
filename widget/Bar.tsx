@@ -13,12 +13,17 @@ import { cpuUsageString } from "./Service/CPUMonitorService"
 import BatteryMenu from "./BatteryMenu"
 import ForceUpdate from "./ForceUpdate"
 import Applauncher from "./AppLauncher"
+import ClipboardLauncher from "./ClipboardLauncher"
 
 export default function BarApp() {
   const monitors = createBinding(app, "monitors")
   return (
     <For each={monitors} cleanup={(win) => (win as Gtk.Window).destroy()}>
-      {(monitor) => <Bar gdkmonitor={monitor} />}
+      {(monitor, _) => {
+        <Applauncher gdkmonitor={monitor} />;
+        <ClipboardLauncher gdkmonitor={monitor} />;
+        return <Bar gdkmonitor={monitor} />;
+      }}
     </For>
   );
 }
@@ -26,8 +31,6 @@ export default function BarApp() {
 function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   const time = createPoll("", 1000, "date '+%m/%d %H:%M'")
   const { TOP, LEFT, RIGHT } = Astal.WindowAnchor;
-
-  <Applauncher gdkmonitor={gdkmonitor} />
 
   const sysMenuStates = new SystemMenuStates()
   SystemMenuWindow(gdkmonitor, sysMenuStates)

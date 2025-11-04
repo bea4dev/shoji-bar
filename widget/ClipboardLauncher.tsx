@@ -1,44 +1,62 @@
 import { For, createState } from "ags"
 import { Astal, Gtk, Gdk } from "ags/gtk4"
-import AstalApps from "gi://AstalApps"
+import { execAsync } from "ags/process"
 import Graphene from "gi://Graphene"
-import { disable_clipboard_launcher } from "./ClipboardLauncher"
+import { disable_app_launcher } from "./AppLauncher"
 
 const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
 
 const windows: Array<Gtk.Window> = []
 
-export function toggle_app_launcher() {
+type ClipEntry = {
+  id: string;
+  text: string;
+};
+
+export async function getClipboardHistory(limit = 20): Promise<ClipEntry[]> {
+  const out = await execAsync(['bash', '-c', 'cliphist list | head -n ' + limit]);
+
+  // cliphist の出力形式に合わせてパース
+  // 例: "12345  copied text..."
+  return out
+    .split('\n')
+    .filter(line => line.trim().length > 0)
+    .map(line => {
+      const firstSpace = line.indexOf(' ');
+      if (firstSpace === -1) return null;
+      const id = line.slice(0, firstSpace).trim();
+      const text = line.slice(firstSpace + 1).trim();
+      return { id, text };
+    })
+    .filter((x): x is ClipEntry => x !== null);
+}
+
+// 選択したエントリを復元する
+export async function restoreClipboard(id: string): Promise<void> {
+  await execAsync(['bash', '-c', `cliphist decode ${id} | wl-copy`]);
+}
+
+export function toggle_clipboard_launcher() {
   for (let launcher_window of windows) {
     launcher_window.visible = !launcher_window.visible
   }
-  disable_clipboard_launcher()
+  disable_app_launcher()
 }
 
-export function disable_app_launcher() {
+export function disable_clipboard_launcher() {
   for (let launcher_window of windows) {
     launcher_window.visible = false
   }
 }
 
-export default function Applauncher({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
+export default function ClipboardLauncher({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   let contentbox: Gtk.Box
-  let searchentry: Gtk.Entry
   let win: Astal.Window
 
-  const apps = new AstalApps.Apps()
-  const [list, setList] = createState(new Array<AstalApps.Application>())
+  const [list, setList] = createState(new Array<ClipEntry>())
 
-  function search(text: string) {
-    if (text === "") setList([])
-    else setList(apps.fuzzy_query(text).slice(0, 8))
-  }
-
-  function launch(app?: AstalApps.Application) {
-    if (app) {
-      win.hide()
-      app.launch()
-    }
+  async function refreshList() {
+    setList(await getClipboardHistory())
   }
 
   function onKey(
@@ -48,7 +66,7 @@ export default function Applauncher({ gdkmonitor }: { gdkmonitor: Gdk.Monitor })
     _mod: number,
   ) {
     if (keyval === Gdk.KEY_Escape) {
-      disable_app_launcher()
+      disable_clipboard_launcher()
       return
     }
   }
@@ -58,7 +76,7 @@ export default function Applauncher({ gdkmonitor }: { gdkmonitor: Gdk.Monitor })
     const position = new Graphene.Point({ x, y })
 
     if (!rect.contains_point(position)) {
-      disable_app_launcher()
+      disable_clipboard_launcher()
       return true
     }
   }
@@ -72,8 +90,9 @@ export default function Applauncher({ gdkmonitor }: { gdkmonitor: Gdk.Monitor })
     exclusivity={Astal.Exclusivity.IGNORE}
     keymode={Astal.Keymode.EXCLUSIVE}
     onNotifyVisible={({ visible }) => {
-      if (visible) searchentry.grab_focus()
-      else searchentry.set_text("")
+      if (visible) {
+        refreshList()
+      }
     }}
   >
     <Gtk.EventControllerKey onKeyPressed={onKey} />
@@ -92,14 +111,6 @@ export default function Applauncher({ gdkmonitor }: { gdkmonitor: Gdk.Monitor })
           orientation={Gtk.Orientation.VERTICAL}
           spacing={5}
         >
-          <entry
-            $={(ref) => (searchentry = ref)}
-            onNotifyText={({ text }) => search(text)}
-            onActivate={() => launch(list.get()[0])}
-            placeholderText="Search..."
-            class="launcher-text-box"
-          />
-          <Gtk.Separator />
           <scrolledwindow
             overlayScrolling={false}
             kineticScrolling={true}
@@ -107,11 +118,17 @@ export default function Applauncher({ gdkmonitor }: { gdkmonitor: Gdk.Monitor })
           >
             <box orientation={Gtk.Orientation.VERTICAL} spacing={5}>
               <For each={list}>
-                {(app) => (
-                  <button onClicked={() => launch(app)} class="launcher-button">
+                {(clip, index) => (
+                  <button
+                    $={(ref) => {
+                      if (index.get() === 0) {
+                        setTimeout(() => ref.grab_focus(), 1)
+                      }
+                    }}
+                    onClicked={() => { restoreClipboard(clip.id); disable_clipboard_launcher() }}
+                    class="launcher-button">
                     <box>
-                      <image iconName={app.iconName} />
-                      <label label={app.name} maxWidthChars={40} wrap />
+                      <label label={clip.text} maxWidthChars={40} wrap />
                       <label
                         hexpand
                         halign={Gtk.Align.END}
