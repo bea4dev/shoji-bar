@@ -111,7 +111,7 @@ export default function Applauncher({ gdkmonitor }: { gdkmonitor: Gdk.Monitor })
                   <button onClicked={() => launch(app)} class="launcher-button">
                     <box>
                       <image iconName={app.iconName} />
-                      <label label={app.name} maxWidthChars={40} wrap />
+                      <label label={"  " + app.name} maxWidthChars={40} wrap />
                       <label
                         hexpand
                         halign={Gtk.Align.END}

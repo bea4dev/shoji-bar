@@ -12,8 +12,8 @@ import { memoryUsageString } from "./Service/MemoryMonitorService"
 import { cpuUsageString } from "./Service/CPUMonitorService"
 import BatteryMenu from "./BatteryMenu"
 import ForceUpdate from "./ForceUpdate"
-import Applauncher from "./AppLauncher"
-import ClipboardLauncher from "./ClipboardLauncher"
+import Applauncher from "./Launcher/AppLauncher"
+import ClipboardLauncher from "./Launcher/ClipboardLauncher"
 
 export default function BarApp() {
   const monitors = createBinding(app, "monitors")
