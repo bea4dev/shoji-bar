@@ -37,10 +37,10 @@ export default function OverlayDialog(
           <box orientation={Gtk.Orientation.VERTICAL} spacing={24} class="dialog">
             <label label={message} />
             <box orientation={Gtk.Orientation.HORIZONTAL} spacing={24}>
-              <button onClicked={() => { ok(); states.setShowDialog(false); }}>
+              <button onClicked={() => { ok(); states.setShowDialog(false); }} class="dialog-button">
                 <label label={"OK"} css="min-width:45px;" />
               </button>
-              <button onClicked={() => states.setShowDialog(false)}>
+              <button onClicked={() => states.setShowDialog(false)} class="dialog-button">
                 <label label={"NO"} css="min-width:45px;" />
               </button>
             </box>

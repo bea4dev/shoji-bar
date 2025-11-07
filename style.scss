@@ -362,6 +362,11 @@ box.dialog-out {
   border-radius: 5px;
 }
 
+button.dialog-button {
+  min-width: 45px;
+  border-radius: 5px;
+}
+
 
 *:focus {
   outline: none;
