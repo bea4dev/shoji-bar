@@ -80,6 +80,7 @@ button.ws-btn {
   background: transparent;
   border-radius: 4px;
   transition: background 120ms;
+  border: 1px solid transparent;
 
   &:hover {
     background: rgba(235, 235, 235, .08);
