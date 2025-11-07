@@ -14,26 +14,26 @@ type ClipEntry = {
 };
 
 export async function getClipboardHistory(limit = 20): Promise<ClipEntry[]> {
-  const out = await execAsync(['bash', '-c', 'cliphist list | head -n ' + limit]);
+  const out = await execAsync('cliphist list | head -n ' + limit)
+
+  console.log(out)
 
   // cliphist の出力形式に合わせてパース
   // 例: "12345  copied text..."
   return out
     .split('\n')
-    .filter(line => line.trim().length > 0)
+    .filter(line => line.includes("\t"))
     .map(line => {
-      const firstSpace = line.indexOf(' ');
-      if (firstSpace === -1) return null;
-      const id = line.slice(0, firstSpace).trim();
-      const text = line.slice(firstSpace + 1).trim();
+      const split = line.split("\t")
+      const id = split[0].trim();
+      const text = split[1].trim();
       return { id, text };
     })
-    .filter((x): x is ClipEntry => x !== null);
 }
 
 // 選択したエントリを復元する
 export async function restoreClipboard(id: string): Promise<void> {
-  await execAsync(['bash', '-c', `cliphist decode ${id} | wl-copy`]);
+  await execAsync(`cliphist decode ${id} | wl-copy`);
 }
 
 export function toggle_clipboard_launcher() {
