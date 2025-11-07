@@ -34,6 +34,10 @@ export default function NotificationPopups(gdkmonitor: Gdk.Monitor, states: Noti
   notifd.connect("notified", (_, id, replaced) => {
     const notification = notifd.get_notification(id)
 
+    if (!notification) {
+      return
+    }
+
     if (replaced && states.notifications.get().some(n => n.id === id)) {
       states.setNotifications((ns) => ns.map((n) => (n.id === id ? notification : n)))
     } else {
