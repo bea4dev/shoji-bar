@@ -105,6 +105,7 @@ button.close-btn {
   padding: 2px;
   min-width: 20px;
   background: transparent;
+  border-radius: 5px;
 
   &:hover {
     background: rgba(235, 235, 235, .1);
@@ -303,6 +304,10 @@ box.notify-out {
   min-width: 240px;
   background: transparent;
   border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 5px;
+}
+
+button.notify-action-button {
   border-radius: 5px;
 }
 

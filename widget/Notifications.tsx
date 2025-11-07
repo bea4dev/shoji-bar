@@ -132,7 +132,7 @@ export function NotificationBox({ notification, autoHide, outLine }
             wrapMode={Gtk.WrapMode.CHAR}
           />
           {notification.actions.filter(action => action.label !== "view" && action.label !== "View").map(action => (
-            <button label={action.label} onClicked={() => notification.invoke(action.id)} />
+            <button label={action.label} onClicked={() => notification.invoke(action.id)} class="notify-action-button" />
           ))}
         </box>
 
