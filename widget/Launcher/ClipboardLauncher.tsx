@@ -16,8 +16,6 @@ type ClipEntry = {
 export async function getClipboardHistory(limit = 20): Promise<ClipEntry[]> {
   const out = await execAsync('cliphist list | head -n ' + limit)
 
-  console.log(out)
-
   // cliphist の出力形式に合わせてパース
   // 例: "12345  copied text..."
   return out
@@ -33,7 +31,7 @@ export async function getClipboardHistory(limit = 20): Promise<ClipEntry[]> {
 
 // 選択したエントリを復元する
 export async function restoreClipboard(id: string): Promise<void> {
-  await execAsync(`cliphist decode ${id} | wl-copy`);
+  await execAsync(`bash -c "cliphist decode ${id} | wl-copy"`);
 }
 
 export function toggle_clipboard_launcher() {
