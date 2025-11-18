@@ -2,24 +2,11 @@ import { For, createState } from "ags"
 import { Astal, Gtk, Gdk } from "ags/gtk4"
 import AstalApps from "gi://AstalApps"
 import Graphene from "gi://Graphene"
-import { disable_clipboard_launcher } from "./ClipboardLauncher"
+import { LauncherManager } from "./LauncherManager"
 
 const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
 
-const windows: Array<Gtk.Window> = []
-
-export function toggle_app_launcher() {
-  for (let launcher_window of windows) {
-    launcher_window.visible = !launcher_window.visible
-  }
-  disable_clipboard_launcher()
-}
-
-export function disable_app_launcher() {
-  for (let launcher_window of windows) {
-    launcher_window.visible = false
-  }
-}
+export const APP_LAUNCHER = new LauncherManager()
 
 export default function Applauncher({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   let contentbox: Gtk.Box
@@ -36,7 +23,7 @@ export default function Applauncher({ gdkmonitor }: { gdkmonitor: Gdk.Monitor })
 
   function launch(app?: AstalApps.Application) {
     if (app) {
-      win.hide()
+      APP_LAUNCHER.disable_launcher()
       app.launch()
     }
   }
@@ -48,7 +35,7 @@ export default function Applauncher({ gdkmonitor }: { gdkmonitor: Gdk.Monitor })
     _mod: number,
   ) {
     if (keyval === Gdk.KEY_Escape) {
-      disable_app_launcher()
+      APP_LAUNCHER.disable_launcher()
       return
     }
   }
@@ -58,7 +45,7 @@ export default function Applauncher({ gdkmonitor }: { gdkmonitor: Gdk.Monitor })
     const position = new Graphene.Point({ x, y })
 
     if (!rect.contains_point(position)) {
-      disable_app_launcher()
+      APP_LAUNCHER.disable_launcher()
       return true
     }
   }
@@ -72,7 +59,9 @@ export default function Applauncher({ gdkmonitor }: { gdkmonitor: Gdk.Monitor })
     exclusivity={Astal.Exclusivity.IGNORE}
     keymode={Astal.Keymode.EXCLUSIVE}
     onNotifyVisible={({ visible }) => {
-      if (visible) searchentry.grab_focus()
+      if (visible) {
+        searchentry.grab_focus()
+      }
       else searchentry.set_text("")
     }}
   >
@@ -128,7 +117,7 @@ export default function Applauncher({ gdkmonitor }: { gdkmonitor: Gdk.Monitor })
   </window>) as Gtk.Window
 
   launcher_window.visible = false
-  windows.push(launcher_window)
+  APP_LAUNCHER.register_window(launcher_window, gdkmonitor)
 
   return launcher_window
 }

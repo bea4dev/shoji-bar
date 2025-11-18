@@ -2,11 +2,11 @@ import { For, createState } from "ags"
 import { Astal, Gtk, Gdk } from "ags/gtk4"
 import { execAsync } from "ags/process"
 import Graphene from "gi://Graphene"
-import { disable_app_launcher } from "./AppLauncher"
+import { LauncherManager } from "./LauncherManager"
 
 const { TOP, BOTTOM, LEFT, RIGHT } = Astal.WindowAnchor
 
-const windows: Array<Gtk.Window> = []
+export const CLIPBOARD_LAUNCHER = new LauncherManager()
 
 type ClipEntry = {
   id: string;
@@ -34,19 +34,6 @@ export async function restoreClipboard(id: string): Promise<void> {
   await execAsync(`bash -c "cliphist decode ${id} | wl-copy"`);
 }
 
-export function toggle_clipboard_launcher() {
-  for (let launcher_window of windows) {
-    launcher_window.visible = !launcher_window.visible
-  }
-  disable_app_launcher()
-}
-
-export function disable_clipboard_launcher() {
-  for (let launcher_window of windows) {
-    launcher_window.visible = false
-  }
-}
-
 export default function ClipboardLauncher({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
   let contentbox: Gtk.Box
   let win: Astal.Window
@@ -64,7 +51,7 @@ export default function ClipboardLauncher({ gdkmonitor }: { gdkmonitor: Gdk.Moni
     _mod: number,
   ) {
     if (keyval === Gdk.KEY_Escape) {
-      disable_clipboard_launcher()
+      CLIPBOARD_LAUNCHER.disable_launcher()
       return
     }
   }
@@ -74,7 +61,7 @@ export default function ClipboardLauncher({ gdkmonitor }: { gdkmonitor: Gdk.Moni
     const position = new Graphene.Point({ x, y })
 
     if (!rect.contains_point(position)) {
-      disable_clipboard_launcher()
+      CLIPBOARD_LAUNCHER.disable_launcher()
       return true
     }
   }
@@ -123,7 +110,7 @@ export default function ClipboardLauncher({ gdkmonitor }: { gdkmonitor: Gdk.Moni
                         setTimeout(() => ref.grab_focus(), 1)
                       }
                     }}
-                    onClicked={() => { restoreClipboard(clip.id); disable_clipboard_launcher() }}
+                    onClicked={() => { restoreClipboard(clip.id); CLIPBOARD_LAUNCHER.disable_launcher() }}
                     class="launcher-button">
                     <box>
                       <label label={clip.text} maxWidthChars={40} wrap />
@@ -143,7 +130,7 @@ export default function ClipboardLauncher({ gdkmonitor }: { gdkmonitor: Gdk.Moni
   </window>) as Gtk.Window
 
   launcher_window.visible = false
-  windows.push(launcher_window)
+  CLIPBOARD_LAUNCHER.register_window(launcher_window, gdkmonitor)
 
   return launcher_window
 }
