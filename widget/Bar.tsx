@@ -118,9 +118,10 @@ function Bar({ gdkmonitor }: { gdkmonitor: Gdk.Monitor }) {
             hexpand
             css={`margin: 2px 8px;`}
           >
-            <label label="   " xalign={0.0} css={`
+            <label label=" 󰣇  " xalign={0.0} css={`
             font-family: monospace;
-            margin-left: 3px;
+            margin-left: 7px;
+            font-size: 17px;
           `} />
           </button>
           <WorkspaceBar />
